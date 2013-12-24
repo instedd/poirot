@@ -1,14 +1,27 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Poirot</title>
+  <title>ActivityViewer</title>
   <%= stylesheet_link_tag    "application", media: "all", "data-turbolinks-track" => true %>
   <%= javascript_include_tag "application", "data-turbolinks-track" => true %>
   <%= csrf_meta_tags %>
+  <script type="text/javascript">
+    var controller = "<%= params[:controller] %>";
+    var action = "<%= params[:action] %>";
+  </script>
 </head>
 <body>
 
-<%= yield %>
+  <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <a class="navbar-brand" href="/">Poirot</a>
+    <ul class="nav navbar-nav">
+      <li><%= link_to 'Log', log_index_path %></li>
+    </ul>
+  </nav>
+
+  <div class="container">
+    <%= yield %>
+  </div>
 
 </body>
 </html>

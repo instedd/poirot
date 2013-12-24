@@ -1,0 +1,75 @@
+// Place all the styles related to the Log controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+
+table.log-entries {
+  font-size: 90%;
+
+  td {
+    white-space: nowrap;
+  }
+  td:last-child {
+    white-space: normal;
+    word-break: break-all;
+  }
+
+  .level-debug {
+    color: gray;
+  }
+  .level-info {
+    color: black;
+  }
+  .level-notice {
+    color: darkcyan;
+    background-color: azure;
+  }
+  .level-error, .level-alert, .level-emergency {
+    color: rgb(192,0,0);
+    background-color: #f2dede;
+  }
+  .level-alert, .level-emergency {
+    font-weight: bold;
+  }
+  .level-warning {
+    color: orange;
+    background-color: cornsilk;
+  }
+
+  td.clickable {
+    cursor: pointer;
+    &:hover {
+      text-decoration: underline;
+      color: blue;
+    }
+  }
+
+  margin-bottom: 50px;
+}
+
+.slideLeft {
+  position: relative;
+  transition: 0.2s;
+  left: -110%;
+}
+.slideRight {
+  position: relative;
+  transition: 0.2s;
+  left: 110%;
+}
+
+.log-pager {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  background: white;
+
+  &.floating {
+    box-shadow: 0 0 5px rgba(0,0,0,.5);
+  }
+
+  .pager {
+    margin: 10px 25px;
+  }
+}
+

@@ -1,0 +1,70 @@
+.activity {
+  .explorer {
+    position: fixed;
+    background-color: rgb(249,250,249);
+    top: 50px;
+    bottom: 0;
+    left: 0;
+    right: 50%;
+    border-right: 1px dashed lightgray;
+  }
+
+  .details {
+    position: absolute;
+    left: 50%;
+    right: 10px;
+    padding-left: 10px;
+
+    tbody tr:nth-child(odd) td {
+      padding-bottom: 1px;
+      font-size: 90%;
+    }
+    tbody tr:nth-child(even) td {
+      padding-top: 1px;
+      border-top: none;
+    }
+  }
+}
+
+.explorer svg {
+	shape-rendering: crispEdges;
+  text-rendering: optimizeLegibility;
+
+  .time-axis {
+    text {
+      font-size: 10px;
+      font-weight: normal;
+    }
+    stroke: #ccc;
+  }
+
+  .activity {
+    rect {
+      stroke: green;
+      stroke-width: 1px;
+      fill: rgb(115,214,143);
+      fill-opacity: 0.5;
+      opacity: 0.6;
+    }
+
+    .all-activity {
+      stroke-dasharray: 3 3;
+      opacity: 0.2;
+    }
+  }
+}
+
+.explorer .tools {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 8px;
+  font-size: 24px;
+  color: gray;
+
+  .tool {
+    margin-left: 4px;
+    cursor: pointer;
+  }
+}
+

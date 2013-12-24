@@ -1,0 +1,25 @@
+%div.activity(ng-app="activity_viewer" ng-controller="ActivityController")
+
+  .explorer
+    %svg
+    %div.tools
+      %span.tool.glyphicon.glyphicon-zoom-in(ng-click="zoomIn()")><
+      %span.tool.glyphicon.glyphicon-zoom-out(ng-click="zoomOut()")
+
+  .details
+    %table.table.table-stripped.table-hover.log-entries
+      %thead
+        %tr
+          %th Time
+          %th Pid
+          %th Level
+          %th Module
+      %tbody
+        %tr(ng-repeat-start="entry in entries" class="{{entry.cssClass}}")
+          %td {{entry.logtime}}
+          %td {{entry.pid}}
+          %td {{entry.level}}
+          %td {{entry.module}}
+        %tr(ng-repeat-end class="{{entry.cssClass}}")
+          %td(colspan="4") {{entry.message}}
+          
