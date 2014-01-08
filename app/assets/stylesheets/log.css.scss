@@ -30,7 +30,7 @@ table.log-entries {
   .level-alert, .level-emergency {
     font-weight: bold;
   }
-  .level-warning {
+  .level-warning, .level-warn {
     color: orange;
     background-color: cornsilk;
   }

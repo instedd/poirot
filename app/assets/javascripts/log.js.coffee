@@ -24,6 +24,7 @@
         table.on 'transitionend', ->
           finishQuery()
           table.off 'transitionend'
+        setTimeout((-> finishQuery()), 100)
       else
         finishQuery()
 
