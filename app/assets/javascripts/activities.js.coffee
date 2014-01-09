@@ -11,13 +11,6 @@
 
   flow = new Flow('flow-viewer')
 
-  data =
-    lanes: [[3,0],[2,1]]
-    activities: [{id:1, color:"#0099cc"},{id:2, color:"#ff6600"}]
-    events: [{activity:1,time:0,id:1,lane:0},{activity:1,time:3,id:2,lane:0},{activity:1,time:4,id:3,lane:0},{activity:1,time:5,id:4,lane:2},{activity:2,time:0,id:5,lane:0},{activity:2,time:1,id:6,lane:2},{activity:2,time:2,id:7,lane:1},{activity:2,time:3,id:8,lane:0}]
-
-  flow.setData(data)
-
   currentSelection = -1
   flow.clickHandler = (index) ->
     if currentSelection >= 0
@@ -44,9 +37,10 @@
         secondary = (primary[entry.pid] = primary[entry.pid] or nextLane++)
         {
           activity: 1
-          time: i
+          time: new Date(entry.timestamp).getTime()
           id: i
           lane: secondary
+          type: 'event'
         }
 
     lanes = for source, pids of lanes

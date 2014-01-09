@@ -5,28 +5,43 @@ function Flow(containerId) {
     var _container = document.getElementById(containerId);
     var _svg = Snap("#" + containerId);
     var _self = this;
+    var _flow;
     var _height = 0;
     var _width = 0;
+    var _circleRadius = 4;
+    var _circleStroke = 2;
+    var _curveRadius = 6;
     var _laneWidth = 25;
-    var _slotHeight = 20;
+    var _slotHeight = _circleRadius * 2 + _curveRadius * 2;
     var _interval = [];
     var _lanes = [];
     var _levels = [];
     var _activities = [];
+    var _min;
+    var _max;
+            
+    //change icons
+    //unify slots
+    //tooltips
 
     _self.render = function() {
         resetInterval();
         _svg.clear();
         var boundingBox = {x:0, y:0, width:0, height:0};
-        for (var i = _lanes.length - 1; i >= 0; i--) {
-            var lane = _lanes[i];
-            boundingBox = drawLane(lane.length, boundingBox.x + boundingBox.width, 0, _height).getBBox();
-        };
+        _lanes.forEach(function (entry) {
+            var lane = drawLane(entry.length, boundingBox.x + boundingBox.width, 0, _height);
+            boundingBox = lane.getBBox()
+        });
         _width = boundingBox.x + boundingBox.width;
         _container.setAttribute("width", _width + "px");
-        _activities.forEach(function(activity) {
-            drawActivity(activity);
+        _flow = _svg.g();
+        _activities.forEach(function(entry) {
+            var activity = drawActivity(entry);
+            _flow.add(activity);
         });
+        _flow.attr({
+            //opacity:0.5
+        })
     }
 
     _self.setData = function(data) {
@@ -47,11 +62,42 @@ function Flow(containerId) {
             var activity = data.activities[i];
             _activities[activity.id] = {id:activity.id, color:activity.color, events:[]};
         };
-        for (i = data.events.length - 1; i >= 0; i--) {
-            var event = data.events[i];
-            activity = _activities[event.activity];
-            activity.events.push({id:event.id,time:event.time,lane:event.lane, level:_levels[event.lane]});
-        };
+        data.events.sort(function (a,b){
+            return a.time - b.time}
+        );
+        var slot = 0;
+        var parent;
+        data.events.forEach(function (event) {
+            switch(event.type) {
+                case "branch":
+                    activity = _activities[event.child];
+                    parent = event.activity;
+                    break;
+                case "merge":
+                    activity = _activities[event.child];
+                    parent = event.activity;
+                    break;
+                case "event":
+                    activity = _activities[event.activity];
+                    parent = undefined;
+                    break;
+            }
+            activity.events.push({id:event.id,slot:slot,time:event.time,lane:event.lane, level:_levels[event.lane], parent:parent});
+            slot++;
+        });
+        _min = Number.MAX_VALUE;
+        _max = 0;
+        _activities.forEach(function (activity) {
+            var last_event;
+            activity.events.forEach(function (event) {
+                if(last_event != undefined) {
+                    var offset = event.time - last_event.time;
+                    _min = Math.min(_min, offset);
+                    _max = Math.max(_max, offset);
+                }
+                last_event = event;
+            })
+        });
         
         invalidate();
     }
@@ -111,67 +157,70 @@ function Flow(containerId) {
        return lane;
     }
 
-    function drawActivity(activity) {
+    function drawActivity(data) {
         var positions = [];
-            var commands = "M";
-            var last_event;
-            activity.events.forEach(function(event) {
-                event.position = {x:_laneWidth * (event.level + 0.5),  y:event.time * _slotHeight + 30};
-                if(commands != "M") {
-                    var jump = last_event.level - event.level;
-                    if(jump) {
-                        var pivot = (last_event.position.y + event.position.y) / 2;
-                        var radius = pivot - last_event.position.y;
-                        if(jump > 0) {
-                            commands += "Q" + last_event.position.x + " " + (last_event.position.y + radius) + " " + (last_event.position.x + radius) + " " + (last_event.position.y + radius);
-                            commands += "L" + (event.position.x - radius) + " " + (event.position.y - radius);
-                            commands += "Q" + event.position.x + " " + (event.position.y - radius) + " ";
-                        } else {
-                            commands += "Q" + last_event.position.x + " " + (last_event.position.y + radius) + " " + (last_event.position.x - radius) + " " + (last_event.position.y + radius);
-                            commands += "L" + (event.position.x + radius) + " " + (event.position.y - radius);
-                            commands += "Q" + event.position.x + " " + (event.position.y - radius) + " ";
-                        }
-                    } else {
-                        commands += "L";
-                    }
+        var last_event;
+        var activity = _svg.g();
+        data.events.forEach(function(event) {
+            event.position = {x:_laneWidth * (event.level + 0.5),  y:event.slot * _slotHeight + 30};
+            if(last_event != undefined) {
+                var commands = "M" + last_event.position.x + " " + last_event.position.y;
+                var jump = event.level - last_event.level;
+                var curvePoints;
+                if(jump) {
+                    var direction = jump > 0? 1 : -1;
+                    curvePoints = [
+                        {x:last_event.position.x, y:last_event.position.y + _circleRadius},
+                        {x:last_event.position.x + _curveRadius * direction, y:last_event.position.y + _circleRadius + _curveRadius},
+                        {x:event.position.x - _curveRadius * direction, y:last_event.position.y + _circleRadius + _curveRadius},
+                        {x:event.position.x, y:last_event.position.y + _circleRadius + _curveRadius * 2}
+                    ]
+                    commands += "L" + curvePoints[0].x + " " + curvePoints[0].y;
+                    commands += "Q" + curvePoints[0].x + " " + curvePoints[1].y + " " + curvePoints[1].x + " " + curvePoints[1].y;
+                    commands += "L" + curvePoints[2].x + " " + curvePoints[2].y;
+                    commands += "Q" + curvePoints[3].x + " " + curvePoints[2].y + " " + curvePoints[3].x + " " + curvePoints[3].y;
+                    commands += "L";
+                } else {
+                    commands += "L";
                 }
                 commands += event.position.x + " " + event.position.y;
-                last_event = event;
-            });
-            var path = _svg.path(commands);
-            path.attr({
-                fill:"none",
-                stroke:activity.color,
-                strokeWidth:4,
-            });
-           activity.events.forEach(function(event) {
-                radius = 3;
-                var circle = _svg.circle(event.position.x, event.position.y, radius);
-                circle.attr({
-                    fill:"#ffffff",
-                    stroke:activity.color,
-                    strokeWidth:2,
-                    cursor: "pointer",
+                var path = _svg.path(commands);
+                path.attr({
+                    fill:"none",
+                    stroke:data.color,
+                    strokeWidth:_circleStroke + (_circleRadius * 2 - _circleStroke) * (event.time - last_event.time - _min) / (_max - _min),
                 });
-                circle.eventId = event.id;
-                circle.mouseover(circleMouseOverHandler);
-                circle.mouseout(circleMouseOutHandler);
-                circle.click(circleClickHandler);
-                event.shape = circle;
+                activity.add(path);
+                commands = "M";
+            }
+            last_event = event;
+        });
+        data.events.forEach(function(event) {
+            var circle = _svg.circle(event.position.x, event.position.y, _circleRadius);
+            circle.attr({
+                fill:event.parent != undefined? _activities[event.parent].color : "#ffffff",
+                stroke:data.color,
+                strokeWidth:_circleStroke,
+                cursor: "pointer",
             });
+            circle.eventId = event.id;
+            circle.mouseover(circleMouseOverHandler);
+            circle.mouseout(circleMouseOutHandler);
+            circle.click(circleClickHandler);
+            activity.add(circle);
+        });
+        return activity;
     }
 
     function circleMouseOverHandler(e) {
         this.attr({
-            strokeWidth:4,
-            r:5
+            r:_circleRadius + _circleStroke
         });
     }
 
     function circleMouseOutHandler(e) {
         this.attr({
-            strokeWidth:2,
-            r:3
+            r:_circleRadius
         });
     }
 
