@@ -11,15 +11,19 @@
       %thead
         %tr
           %th Time
+          %th Activity
           %th Pid
           %th Level
           %th Source
       %tbody
         %tr(ng-repeat-start="entry in entries" class="{{entry.cssClass}} {{entry.extraCss}}")
           %td {{entry.timestamp}}
+          %td
+            %span.flowLine(style="background-color: {{entry.activityColor}}")
+            {{entry.activity}}
           %td {{entry.pid}}
           %td {{entry.level}}
           %td {{entry.source}}
         %tr(ng-repeat-end class="{{entry.cssClass}} {{entry.extraCss}}")
-          %td(colspan="4") {{entry.message}}
+          %td(colspan="5") {{entry.message}}
           

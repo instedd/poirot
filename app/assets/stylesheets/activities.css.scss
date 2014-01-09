@@ -5,19 +5,22 @@
     top: 50px;
     bottom: 0;
     left: 0;
-    right: 50%;
-    border-right: 1px dashed lightgray;
+    width: 200px;
   }
 
   .details {
     position: absolute;
-    left: 50%;
+    left: 200px;
     right: 10px;
+    top: 50px;
     padding-left: 10px;
+    overflow: auto;
+    border-left: 1px dashed lightgray;
 
     tbody tr:nth-child(odd) td {
       padding-bottom: 1px;
       font-size: 90%;
+      white-space: nowrap;
     }
     tbody tr:nth-child(even) td {
       padding-top: 1px;
@@ -27,6 +30,13 @@
     tbody tr.selected td {
       background-color: #e2e8ff;
     }
+  }
+
+  .flowLine {
+    display: inline-block;
+    width: 15px;
+    height: 3px;
+    margin-right: 5px;
   }
 }
 
