@@ -46,7 +46,7 @@ class LogController < ApplicationController
       entries: response['hits']['hits'].map do |hit|
         entry = hit['_source']
         {
-          logtime: entry['@timestamp'],
+          timestamp: entry['@timestamp'],
           activity: entry['@activity'],
           pid: entry['@pid'],
           level: entry['@level'],

@@ -23,35 +23,16 @@
       padding-top: 1px;
       border-top: none;
     }
+
+    tbody tr.selected td {
+      background-color: #e2e8ff;
+    }
   }
 }
 
 .explorer svg {
-	shape-rendering: crispEdges;
+	shape-rendering: auto;
   text-rendering: optimizeLegibility;
-
-  .time-axis {
-    text {
-      font-size: 10px;
-      font-weight: normal;
-    }
-    stroke: #ccc;
-  }
-
-  .activity {
-    rect {
-      stroke: green;
-      stroke-width: 1px;
-      fill: rgb(115,214,143);
-      fill-opacity: 0.5;
-      opacity: 0.6;
-    }
-
-    .all-activity {
-      stroke-dasharray: 3 3;
-      opacity: 0.2;
-    }
-  }
 }
 
 .explorer .tools {

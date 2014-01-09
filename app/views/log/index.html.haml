@@ -17,7 +17,7 @@
           %th Message
       %tbody
         %tr(ng-repeat="entry in entries" class="{{entry.cssClass}}")
-          %td {{entry.logtime}}
+          %td {{entry.timestamp}}
           %td(ng-class="{'clickable': entry.activity.toLowerCase() != 'undefined'}" ng-click="openActivity(entry)") {{entry.activity}}
           %td {{entry.pid}}
           %td {{entry.level}}

@@ -15,4 +15,5 @@
 //= require d3
 //= require angular
 //= require 'app'
+//= require 'snap.svg-min'
 //= require_tree .
