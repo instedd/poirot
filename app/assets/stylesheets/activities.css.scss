@@ -130,17 +130,18 @@
   text-rendering: optimizeLegibility;
 }
 
-.explorer .tools {
-  position: absolute;
-  top: 0;
-  right: 0;
-  padding: 8px;
-  font-size: 24px;
-  color: gray;
-
-  .tool {
-    margin-left: 4px;
+table.activities {
+  font-size: 90%;
+  td {
+    white-space: nowrap;
+    cursor: default;
+  }
+  td.clickable {
     cursor: pointer;
+    &:hover {
+      text-decoration: underline;
+      color: blue;
+    }
   }
 }
 

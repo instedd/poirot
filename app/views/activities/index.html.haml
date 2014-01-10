@@ -1,0 +1,34 @@
+%div(ng-app="poirot" ng-controller="ActivityIndexController")
+  %div.row
+    %div.col-md-12
+      %div.input-group(ng-class="{'has-error': queryError}")
+        %input.form-control(ng-model="queryString" ng-keypress="queryKeyPress($event)")
+        %span.input-group-btn
+          %button.btn.btn-default(ng-click="runQuery()") Query
+
+    %table.table.table-stripped.table-hover.activities
+      %thead
+        %tr
+          %th Activity
+          %th Start
+          %th End
+          %th Parent
+          %th Source
+      %tbody
+        %tr(ng-repeat="activity in activities" ng-click="open(activity.id)")
+          %td.clickable {{activity.id}}
+          %td {{activity.start}}
+          %td {{activity.stop}}
+          %td(ng-click="open(activity.parent, $event)" ng-class="{'clickable': activity.parent}")
+            {{activity.parent}}
+          %td {{activity.source}}
+
+  %div.row.activities-pager(ng-if="shouldPage()")
+    %ul.pager
+      %li.previous
+        %a(href="#" ng-click="prevPage()") &larr; Older
+      %li
+        {{fromActivity()}}-{{toActivity()}} of {{totalCount}} activities
+      %li.next
+        %a(href="#" ng-click="nextPage()") Newer &rarr;
+

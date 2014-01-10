@@ -1,2 +1,2 @@
-@app = angular.module('activity_viewer', [])
+@app = angular.module('poirot', [])
 
