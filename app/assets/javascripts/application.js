@@ -16,4 +16,6 @@
 //= require angular
 //= require 'app'
 //= require 'snap.svg-min'
+//= require 'inheritance'
+//= require 'eventDispatcher'
 //= require_tree .

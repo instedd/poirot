@@ -1,11 +1,12 @@
 function Flow(containerId) {
 
-    var SERVER_ICON = "M0,0v2.995h16.031V0H0z M1.519,2.187c-0.406,0-0.735-0.329-0.735-0.735c0-0.406,0.329-0.735,0.735-0.735c0.406,0,0.735,0.329,0.735,0.735C2.254,1.858,1.924,2.187,1.519,2.187z M0,6.995h16.031V4H0V6.995z M1.519,4.717c0.406,0,0.735,0.329,0.735,0.735c0,0.406-0.329,0.735-0.735,0.735c-0.406,0-0.735-0.329-0.735-0.735C0.784,5.046,1.113,4.717,1.519,4.717z M0,10.995h7.005v1.266C6.702,12.44,6.454,12.694,6.28,13H0v1.981h6.285c0.347,0.604,0.99,1.015,1.736,1.015s1.39-0.411,1.736-1.015h6.273V13H9.762c-0.18-0.317-0.44-0.577-0.757-0.756v-1.249h7.026V8H0V10.995z M1.519,8.717c0.406,0,0.735,0.329,0.735,0.735c0,0.406-0.329,0.735-0.735,0.735c-0.406,0-0.735-0.329-0.735-0.735C0.784,9.046,1.113,8.717,1.519,8.717z";
-
+    var _self = this;
     var _container = document.getElementById(containerId);
     var _svg = Snap("#" + containerId);
-    var _self = this;
+    var _background;
     var _flow;
+    var _connector;
+    var _targetAt;
     var _height = 0;
     var _width = 0;
     var _circleRadius = 4;
@@ -17,31 +18,92 @@ function Flow(containerId) {
     var _lanes = [];
     var _levels = [];
     var _activities = [];
+    var _events = [];
+    var _selected;
     var _min;
     var _max;
+    var _scroll = 0;
+    var _contentHeight = 0;
+    var _windowHeight = 0;
             
-    //change icons
-    //unify slots
-    //tooltips
+    _self.setScroll = function(scroll, contentHeight, windowHeight) {
+        _scroll = scroll;
+        _contentHeight = contentHeight;
+        _windowHeight = windowHeight;
+        var value = Math.max(0, Math.min(1, _scroll / (_contentHeight - _windowHeight)));
+        if(_flow != undefined) {
+            var margin = _slotHeight / 2 + _circleRadius;
+            var flowHeight = _flow.getBBox().height + margin;
+            var scrollHeight = _height - flowHeight;
+            if(_height >= flowHeight) {
+                value = 0;
+            }
+            var offset = (value * scrollHeight + margin);
+            _flow.attr({
+                transform: "t0 " + offset
+            });
+            _connector.clear();
+            if(_selected != undefined && _targetAt != undefined) {
+                var start = {x:(_selected.level + 0.5) * _laneWidth, y:_selected.slot * _slotHeight + offset};
+                var end = {x:_width, y:_targetAt - _scroll};
+                var pivot = {x:(start.x + end.x) / 2, y:(start.y + end.y) / 2};
+                var commands = "M" + start.x + "," + start.y;
+                commands += "Q" + ((start.x + pivot.x) / 2) + " " + start.y + " " + pivot.x + " " + pivot.y;
+                commands += "Q" + ((pivot.x + end.x) / 2) + " " + end.y + " " + end.x + " " + end.y;
+                var connector = _svg.path(commands);
+                connector.attr({
+                    fill:"none",
+                    stroke:_activities[_selected.activity].color,
+                    strokeWidth:getStrokeWidth(0),
+                    "stroke-linecap":"round",
+                    "pointer-events":"none"
+                });
+                _connector.add(connector);
+            }
+        }
+    }
+
+    _self.selectById = function(id) {
+        if(_selected != undefined && _selected.id == id) {
+            _selected = undefined;
+            invalidate();
+            return;
+        }
+        _events.every(function (entry) {
+            if(entry.id == id) {
+                _selected = entry;
+                invalidate();
+                return false;
+            } else {
+                return true;
+            }
+        });
+    }
+
+    _self.setTargetAt = function(y) {
+        _targetAt = y;
+        _self.setScroll(_scroll, _contentHeight, _windowHeight);
+    }
 
     _self.render = function() {
         resetInterval();
         _svg.clear();
+        _background = _svg.g();
         var boundingBox = {x:0, y:0, width:0, height:0};
         _lanes.forEach(function (entry) {
             var lane = drawLane(entry.length, boundingBox.x + boundingBox.width, 0, _height);
+            _background.add(lane);
             boundingBox = lane.getBBox()
         });
-        _width = boundingBox.x + boundingBox.width;
+        _width = boundingBox.x + boundingBox.width + _laneWidth;
         _container.setAttribute("width", _width + "px");
         _flow = _svg.g();
         _activities.forEach(function(entry) {
             var activity = drawActivity(entry);
             _flow.add(activity);
         });
-        _flow.attr({
-            //opacity:0.5
-        })
+        _connector = _svg.g();
+        _self.setScroll(_scroll, _contentHeight, _windowHeight);
     }
 
     _self.setData = function(data) {
@@ -58,6 +120,7 @@ function Flow(containerId) {
             _lanes.push(subLanes);
         });
         _activities = [];
+        _events = []
         for (var i = data.activities.length - 1; i >= 0; i--) {
             var activity = data.activities[i];
             _activities[activity.id] = {id:activity.id, color:activity.color, events:[]};
@@ -67,35 +130,37 @@ function Flow(containerId) {
         );
         var slot = 0;
         var parent;
-        data.events.forEach(function (event) {
-            switch(event.type) {
+        data.events.forEach(function (entry) {
+            switch(entry.type) {
                 case "branch":
-                    activity = _activities[event.child];
-                    parent = event.activity;
+                    activity = _activities[entry.child];
+                    parent = entry.activity;
                     break;
                 case "merge":
-                    activity = _activities[event.child];
-                    parent = event.activity;
+                    activity = _activities[entry.child];
+                    parent = entry.activity;
                     break;
                 case "event":
-                    activity = _activities[event.activity];
+                    activity = _activities[entry.activity];
                     parent = undefined;
                     break;
             }
-            activity.events.push({id:event.id,slot:slot,time:event.time,lane:event.lane, level:_levels[event.lane], parent:parent});
+            var event = {activity:entry.activity, id:entry.id, slot:slot, time:entry.time, lane:entry.lane, level:_levels[entry.lane], parent:parent};
+            _events.push(event);
+            activity.events.push(event);
             slot++;
         });
         _min = Number.MAX_VALUE;
         _max = 0;
         _activities.forEach(function (activity) {
-            var last_event;
+            var  lastEvent;
             activity.events.forEach(function (event) {
-                if(last_event != undefined) {
-                    var offset = event.time - last_event.time;
+                if( lastEvent != undefined) {
+                    var offset = event.time -  lastEvent.time;
                     _min = Math.min(_min, offset);
                     _max = Math.max(_max, offset);
                 }
-                last_event = event;
+                lastEvent = event;
             })
         });
         
@@ -133,7 +198,7 @@ function Flow(containerId) {
             var laneX = Math.round(i * subLaneWidth) + strokeWidth / 2;
             var line = _svg.line(laneX, 0, laneX, height);
             line.attr({
-                stroke:"#bcbcbc",
+                stroke:"#f0f0f0",
                 strokeWidth:strokeWidth,
                 strokeDasharray:"4,2"
             });
@@ -145,12 +210,6 @@ function Flow(containerId) {
             strokeWidth:strokeWidth * 2,
         });
         lane.add(line);
-        var icon = _svg.path(SERVER_ICON);
-        icon.attr({
-            fill:"#999999",
-            transform: "t" + 4 + " " + 4
-        });
-        lane.add(icon);
         lane.attr({
             transform: "t" + x + " " + y
         });
@@ -159,22 +218,30 @@ function Flow(containerId) {
 
     function drawActivity(data) {
         var positions = [];
-        var last_event;
+        var  lastEvent;
         var activity = _svg.g();
         data.events.forEach(function(event) {
-            event.position = {x:_laneWidth * (event.level + 0.5),  y:event.slot * _slotHeight + 30};
-            if(last_event != undefined) {
-                var commands = "M" + last_event.position.x + " " + last_event.position.y;
-                var jump = event.level - last_event.level;
+            event.position = {x:_laneWidth * (event.level + 0.5),  y:event.slot * _slotHeight};
+            if( lastEvent != undefined) {
+                var commands = "M" +  lastEvent.position.x + " " +  lastEvent.position.y;
+                var jump = event.level -  lastEvent.level;
                 var curvePoints;
                 if(jump) {
-                    var direction = jump > 0? 1 : -1;
-                    curvePoints = [
-                        {x:last_event.position.x, y:last_event.position.y + _circleRadius},
-                        {x:last_event.position.x + _curveRadius * direction, y:last_event.position.y + _circleRadius + _curveRadius},
-                        {x:event.position.x - _curveRadius * direction, y:last_event.position.y + _circleRadius + _curveRadius},
-                        {x:event.position.x, y:last_event.position.y + _circleRadius + _curveRadius * 2}
-                    ]
+                    if(jump > 0) {
+                        curvePoints = [
+                            {x: lastEvent.position.x, y: lastEvent.position.y + _circleRadius},
+                            {x: lastEvent.position.x + _curveRadius, y: lastEvent.position.y + _circleRadius + _curveRadius},
+                            {x:event.position.x - _curveRadius, y: lastEvent.position.y + _circleRadius + _curveRadius},
+                            {x:event.position.x, y: lastEvent.position.y + _circleRadius + _curveRadius * 2}
+                        ]
+                    } else {
+                        curvePoints = [
+                            {x: lastEvent.position.x, y:event.position.y - _circleRadius - _curveRadius * 2},
+                            {x: lastEvent.position.x - _curveRadius, y:event.position.y - _circleRadius - _curveRadius},
+                            {x:event.position.x + _curveRadius, y:event.position.y - _circleRadius - _curveRadius},
+                            {x:event.position.x, y:event.position.y - _circleRadius}
+                        ]
+                    }
                     commands += "L" + curvePoints[0].x + " " + curvePoints[0].y;
                     commands += "Q" + curvePoints[0].x + " " + curvePoints[1].y + " " + curvePoints[1].x + " " + curvePoints[1].y;
                     commands += "L" + curvePoints[2].x + " " + curvePoints[2].y;
@@ -188,50 +255,65 @@ function Flow(containerId) {
                 path.attr({
                     fill:"none",
                     stroke:data.color,
-                    strokeWidth:_circleStroke + (_circleRadius * 2 - _circleStroke) * (event.time - last_event.time - _min) / (_max - _min),
+                    strokeWidth: getStrokeWidth((event.time - lastEvent.time - _min) / (_max - _min))
                 });
                 activity.add(path);
                 commands = "M";
             }
-            last_event = event;
+             lastEvent = event;
         });
         data.events.forEach(function(event) {
-            var circle = _svg.circle(event.position.x, event.position.y, _circleRadius);
+            var selected = _selected != undefined && _selected.id == event.id;
+            var circle = _svg.circle(event.position.x, event.position.y, _circleRadius * (selected? 2 : 1));
             circle.attr({
                 fill:event.parent != undefined? _activities[event.parent].color : "#ffffff",
                 stroke:data.color,
                 strokeWidth:_circleStroke,
-                cursor: "pointer",
+                cursor: "pointer"
             });
             circle.eventId = event.id;
             circle.mouseover(circleMouseOverHandler);
             circle.mouseout(circleMouseOutHandler);
             circle.click(circleClickHandler);
             activity.add(circle);
+            if(selected) {
+                var innerCircle = _svg.circle(event.position.x, event.position.y, _circleRadius);
+                innerCircle.attr({
+                    fill:data.color,
+                    "pointer-events":"none"
+                });
+                activity.add(innerCircle);
+            }
         });
         return activity;
     }
 
+    function getStrokeWidth(value) {
+        return _circleStroke + (_circleRadius * 2 - _circleStroke) * value;
+    }
+
     function circleMouseOverHandler(e) {
-        this.attr({
-            r:_circleRadius + _circleStroke
-        });
+        if(_selected == undefined || _selected.id != this.eventId) {
+            this.attr({
+                r:_circleRadius + _circleStroke
+            });
+        }
     }
 
     function circleMouseOutHandler(e) {
-        this.attr({
-            r:_circleRadius
-        });
+        if(_selected == undefined || _selected.id != this.eventId) {
+            this.attr({
+                r:_circleRadius
+            });
+        }
     }
 
     function circleClickHandler(e) {
-        if (_self.clickHandler) {
-            _self.clickHandler(this.eventId);
-        } else {
-            alert("Event selected (id: " + this.eventId + ")");
-        }
+        _self.dispatchEvent(new Event(Event.SELECT, {id:this.eventId}));
     }
 
     invalidate();
 }
+
+Flow.extends(EventDispatcher);
             

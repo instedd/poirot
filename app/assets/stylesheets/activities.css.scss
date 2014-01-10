@@ -1,35 +1,62 @@
 .activity {
+  position: absolute;
+  top: 60px;
+  left: 20px;
+  right: 20px;
+  bottom: 20px;
+  overflow: hidden;
+
   .explorer {
-    position: fixed;
-    top: 50px;
+    position: absolute;
+    top: 30px;
     bottom: 0;
     left: 0;
-    width: 200px;
   }
 
   .details {
     position: absolute;
+    top: 0px;
     left: 200px;
-    right: 10px;
-    top: 50px;
-    padding-left: 10px;
-    overflow: auto;
-    border-left: 1px dashed lightgray;
+    right: 0px;
+    bottom: 0px;
+    overflow: hidden;
 
-    tbody tr.selected td {
-      background-color: #e2e8ff;
+    .heading {
+      table {
+        table-layout: fixed;
+      }
+      th:first-child {
+        padding: 0;
+      }
+      th {
+        border-bottom: none;
+      }
+    }
+
+    .grid-viewport {
+      position: absolute;
+      top: 30px;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      overflow: auto;
     }
   }
 
-  .flowLine {
-    display: inline-block;
-    width: 15px;
-    height: 3px;
-    margin-right: 5px;
+  col.gutter {
+    width: 13px;
+  }
+  col.timestamp {
+    width: 200px;
   }
 
   table.log-entries {
     table-layout: fixed;
+    margin-bottom: 0;
+
+    tbody td {
+      cursor: default;
+    }
 
     tbody td:nth-child(2) {
       overflow: hidden;
@@ -52,6 +79,47 @@
       }
       &.level-fatal, &.level-critical {
         background-image: url(/assets/fatal.png);
+      }
+    }
+
+    tbody tr.selected td {
+      background-color: #e2e8ff;
+    }
+    tbody tr:last-child td {
+      border-bottom: 1px solid #dddddd;
+    }
+
+    td.gutter {
+      border-top: 1px solid transparent !important;
+      border-bottom: none !important;
+      background: none !important;
+      padding: 0;
+      position: relative;
+
+      span.gutter {
+        position: absolute;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        display: block;
+        width: 5px;
+      }
+      span.arrow {
+        position: absolute;
+        right: 5px;
+        top: 0;
+        bottom: 0;
+        border-top: 15px solid transparent;
+        border-bottom: 15px solid transparent;
+        border-right: 5px solid;
+      }
+      &.selected {
+        span.gutter {
+          width: 8px;
+        }
+        span.arrow {
+          right: 8px;
+        }
       }
     }
   }

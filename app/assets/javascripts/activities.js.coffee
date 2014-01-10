@@ -2,32 +2,34 @@
   ACTIVITY_COLORS = ['#0099cc', '#ff6600', '#9933cc', '#669900']
 
   $scope.entries = []
-  activity = null
-
-  addCssClasses = (data) ->
-    addCssEntry(entry) for entry in data
-
-  addCssEntry = (entry) ->
-    entry.cssClass = "level-#{entry.level}"
-    entry
-
-  flow = new Flow('flow-viewer')
-
   currentSelection = -1
-  flow.clickHandler = (index) ->
+
+  selectByIndex = (index) ->
     if currentSelection >= 0
-      $scope.entries[currentSelection].extraCss = ''
-    currentSelection = if index < $scope.entries.length then index else -1
+      $scope.entries[currentSelection].selected = false
+      flow.selectById(currentSelection)
+      flow.setTargetAt(undefined)
+
+    if index < $scope.entries.length
+      rowHeight = $('.grid-viewport tbody tr:first-child').height()
+      currentSelection = index
+      flow.selectById(index)
+      flow.setTargetAt(rowHeight * index + rowHeight/2)
+    else
+      currentSelection = -1
+    
     if currentSelection >= 0
-      $scope.entries[currentSelection].extraCss = 'selected'
-    $scope.$apply()
+      $scope.entries[currentSelection].selected = true
+
+  $scope.selectEntry = (index) ->
+    selectByIndex index
 
   updateSize = ->
     flow.setHeight($('#flow-viewer').height())
+    updateScroll()
 
-  $(window).on 'resize', updateSize
-
-  updateSize()
+  updateScroll = ->
+    flow.setScroll viewport.scrollTop(), viewportContent.height(), viewport.height()
 
   updateFlow = (entries, full_data) ->
     lanes = {}
@@ -35,6 +37,8 @@
     activities = []
     nextLane = 1
     nextActivity = 1
+
+    # build events vector for flow component while calculating necessary lanes
     events = for entry, i in entries
       do (entry) ->
         primary = (lanes[entry.source] = lanes[entry.source] or {})
@@ -55,11 +59,12 @@
           type: 'event'
         }
 
+    # finds the lane in which the given activity has the last event before given time
     findBestLane = (aid, time) ->
       best = 0
-      for event in events
+      for event in events when event.time <= time
         do (event) ->
-          if event.activity == aid and event.time <= time
+          if event.activity == aid
             best = event.lane
       best
 
@@ -80,6 +85,7 @@
             type: 'branch'
             child: acts[activity.id]
 
+    # build lanes vector for flow component
     lanes = for source, pids of lanes
       do (source, pids) ->
         for pid, lane of pids
@@ -92,32 +98,63 @@
       events: events
     flow.setData(data)
 
+    # adjust events grid left position for flow component width
     setTimeout(() ->
       width = $('#flow-viewer').width()
       $('.details').css(left: "#{width}px")
     , 50)
 
-  $.getJSON location.href, (data) ->
+  addCssClasses = (data) ->
+    for entry in data
+      do (entry) ->
+        entry.cssClass = "level-#{entry.level}"
+        entry
+
+  loadData = (data) ->
     nextColor = 0
     colorDict = {}
     entries = []
+    # consolidate event entries from all activities in data
     for activity in data
       do (activity) ->
-        activity_entries = for entry in activity.entries
+        activityEntries = for entry in activity.entries
           do (entry) ->
             color = colorDict[activity.id] or \
               (colorDict[activity.id] = ACTIVITY_COLORS[nextColor++ % ACTIVITY_COLORS.length])
             entry.activity = activity.id
-            entry.short_activity = activity.id.substr(0,8)
             entry.activityColor = color
             entry
-        entries = entries.concat(activity_entries)
+        entries = entries.concat(activityEntries)
 
+    # sort by timestamp
     entries = entries.sort (a,b) ->
       if a.timestamp > b.timestamp then 1 else -1
 
     $scope.entries = addCssClasses(entries)
     $scope.$apply()
     updateFlow(entries, data)
+
+
+  # define and configure flow component
+  flow = new Flow('flow-viewer')
+  flow.addEventListener Event.SELECT, (evt) ->
+    index = evt.info.id
+    selectByIndex index
+    $scope.$apply()
+
+  viewport = $('.grid-viewport')
+  viewportContent = $('.log-entries')
+
+  viewport.on 'scroll', updateScroll
+  $(window).on 'resize', updateSize
+
+  updateSize()
+
+  # load initial set of data
+  $.ajax
+    dataType: 'json',
+    url: location.href,
+    cache: false,
+    success: loadData
 ]
 
