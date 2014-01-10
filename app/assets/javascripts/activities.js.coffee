@@ -1,4 +1,6 @@
 @app.controller 'ActivityController', ['$scope', ($scope) ->
+  ACTIVITY_COLORS = ['#0099cc', '#ff6600', '#9933cc', '#669900']
+
   $scope.entries = []
   activity = null
 
@@ -26,8 +28,6 @@
   $(window).on 'resize', updateSize
 
   updateSize()
-
-  activityColors = ['#0099cc', '#ff6600']
 
   updateFlow = (entries, full_data) ->
     lanes = {}
@@ -105,7 +105,8 @@
       do (activity) ->
         activity_entries = for entry in activity.entries
           do (entry) ->
-            color = colorDict[activity.id] or (colorDict[activity.id] = activityColors[nextColor++ % activityColors.length])
+            color = colorDict[activity.id] or \
+              (colorDict[activity.id] = ACTIVITY_COLORS[nextColor++ % ACTIVITY_COLORS.length])
             entry.activity = activity.id
             entry.short_activity = activity.id.substr(0,8)
             entry.activityColor = color

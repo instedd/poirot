@@ -1,7 +1,6 @@
 .activity {
   .explorer {
     position: fixed;
-    background-color: rgb(249,250,249);
     top: 50px;
     bottom: 0;
     left: 0;
@@ -17,16 +16,6 @@
     overflow: auto;
     border-left: 1px dashed lightgray;
 
-    tbody tr:nth-child(odd) td {
-      padding-bottom: 1px;
-      font-size: 90%;
-      white-space: nowrap;
-    }
-    tbody tr:nth-child(even) td {
-      padding-top: 1px;
-      border-top: none;
-    }
-
     tbody tr.selected td {
       background-color: #e2e8ff;
     }
@@ -37,6 +26,34 @@
     width: 15px;
     height: 3px;
     margin-right: 5px;
+  }
+
+  table.log-entries {
+    table-layout: fixed;
+
+    tbody td:nth-child(2) {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      padding-left: 30px;
+      background-repeat: no-repeat;
+      background-position: 4px center;
+
+      &.level-debug {
+        background-image: url(/assets/debug.png);
+      }
+      &.level-info {
+        background-image: url(/assets/info.png);
+      }
+      &.level-warning, &.level-warn {
+        background-image: url(/assets/alert.png);
+      }
+      &.level-error {
+        background-image: url(/assets/error.png);
+      }
+      &.level-fatal, &.level-critical {
+        background-image: url(/assets/fatal.png);
+      }
+    }
   }
 }
 

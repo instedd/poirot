@@ -2,28 +2,22 @@
 
   .explorer
     %svg#flow-viewer
-    %div.tools(class="hidden")
-      %span.tool.glyphicon.glyphicon-zoom-in(ng-click="zoomIn()")><
-      %span.tool.glyphicon.glyphicon-zoom-out(ng-click="zoomOut()")
 
   .details
     %table.table.table-stripped.table-hover.log-entries
+      %colgroup
+        %col(width="4px")
+        %col
+        %col(width="200px")
       %thead
         %tr
+          %th
+          %th Message
           %th Time
-          %th Activity
-          %th Pid
-          %th Level
-          %th Source
       %tbody
-        %tr(ng-repeat-start="entry in entries" class="{{entry.cssClass}} {{entry.extraCss}}")
+        %tr(ng-repeat="entry in entries" class="{{entry.extraCss}}")
+          %td(style="background-color: {{entry.activityColor}}")
+          %td(class="{{entry.cssClass}}")
+            {{entry.message}}
           %td {{entry.timestamp}}
-          %td
-            %span.flowLine(style="background-color: {{entry.activityColor}}")
-            {{entry.activity}}
-          %td {{entry.pid}}
-          %td {{entry.level}}
-          %td {{entry.source}}
-        %tr(ng-repeat-end class="{{entry.cssClass}} {{entry.extraCss}}")
-          %td(colspan="5") {{entry.message}}
-          
+

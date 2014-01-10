@@ -17,3 +17,7 @@
   margin-top: 60px;
 }
 
+a.navbar-brand {
+  padding: 8px 15px; 
+}
+
