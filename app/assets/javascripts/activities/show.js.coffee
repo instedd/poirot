@@ -3,10 +3,17 @@
 
   $scope.entries = []
   $scope.tooltip = message: '', visible: false, style: {}
+  $scope.mainActivity = {}
   currentSelection = -1
   flowSVG = $('#flow-viewer')
 
+  $scope.openActivity = (id) ->
+    location.href = "/activities/#{id}"
+
   selectByIndex = (index) ->
+    if typeof(index) == 'string'
+      $scope.openActivity index
+
     if currentSelection >= 0
       $scope.entries[currentSelection].selected = false
       flow.selectById(currentSelection)
@@ -98,7 +105,7 @@
           events.unshift
             activity: acts[paid]
             time: time
-            id: nextId++
+            id: activity.id
             lane: bestLane
             type: 'branch'
             child: acts[activity.id]
@@ -149,6 +156,7 @@
       if a.timestamp > b.timestamp then 1 else -1
 
     $scope.entries = addCssClasses(entries)
+    $scope.mainActivity = data[0]
     $scope.$apply()
     updateFlow(entries, data)
 

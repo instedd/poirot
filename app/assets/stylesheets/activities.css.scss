@@ -22,11 +22,47 @@
 
 .activity {
   position: absolute;
-  top: 60px;
-  left: 20px;
-  right: 20px;
-  bottom: 20px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 50px;
   overflow: hidden;
+
+  header {
+    position: absolute;
+    top: 0;
+    height: 40px;
+    left: 0;
+    right: 0;
+    background-color: #fdfdfd;
+    border-bottom: 1px solid #dddddd;
+    margin: 0;
+    box-shadow: 0 0 10px rgba(0,0,0,.2);
+    padding: 10px;
+
+    .parent {
+      float: left;
+      background-image: url(/assets/parent.png);
+      background-repeat: no-repeat;
+      background-position: center center;
+      width: 20px;
+      height: 20px;
+      margin-right: 10px;
+      cursor: pointer;
+    }
+
+    .activity-id {
+      font-weight: bold;
+    }
+  }
+
+  section {
+    position: absolute;
+    left: 20px;
+    right: 20px;
+    bottom: 20px;
+    top: 40px;
+  }
 
   .explorer {
     position: absolute;

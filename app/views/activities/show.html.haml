@@ -1,34 +1,40 @@
 %div.activity(ng-app="poirot" ng-controller="ActivityController")
+  %header
+    %a.parent(ng-if="mainActivity.parent_id" ng-click="openActivity(mainActivity.parent_id)")
+    Activity
+    %span.activity-id
+      {{mainActivity.id}}
 
-  .explorer
-    %svg#flow-viewer
+  %section
+    .explorer
+      %svg#flow-viewer
 
-  .details
-    %table.heading.table
-      %colgroup
-        %col.gutter
-        %col
-        %col.timestamp
-      %thead
-        %tr
-          %th
-          %th Message
-          %th Time
-        
-    .grid-viewport
-      .message-tooltip.level-icon(ng-show="tooltip.visible" ng-style="tooltip.style" class="{{tooltip.cssClass}}")
-        {{tooltip.message}}
-      %table.table.table-striped.table-hover.log-entries
+    .details
+      %table.heading.table
         %colgroup
           %col.gutter
           %col
           %col.timestamp
-        %tbody
-          %tr(ng-repeat="entry in entries" ng-click="selectEntry($index)")
-            %td(class="gutter {{entry.selected ? 'selected' : ''}}")<
-              %span.gutter(style="background-color: {{entry.activityColor}}")<
-              %span(ng-if="entry.selected" class="arrow" style="border-right-color: {{entry.activityColor}}")<>
-            %td(class="level-icon {{entry.cssClass}}" ng-mouseenter="showTooltip(entry, $event)" ng-mouseout="hideTooltip()")
-              {{entry.message}}
-            %td {{entry.timestamp}}
+        %thead
+          %tr
+            %th
+            %th Message
+            %th Time
+          
+      .grid-viewport
+        .message-tooltip.level-icon(ng-show="tooltip.visible" ng-style="tooltip.style" class="{{tooltip.cssClass}}")
+          {{tooltip.message}}
+        %table.table.table-striped.table-hover.log-entries
+          %colgroup
+            %col.gutter
+            %col
+            %col.timestamp
+          %tbody
+            %tr(ng-repeat="entry in entries" ng-click="selectEntry($index)")
+              %td(class="gutter {{entry.selected ? 'selected' : ''}}")<
+                %span.gutter(style="background-color: {{entry.activityColor}}")<
+                %span(ng-if="entry.selected" class="arrow" style="border-right-color: {{entry.activityColor}}")<>
+              %td(class="level-icon {{entry.cssClass}}" ng-mouseenter="showTooltip(entry, $event)" ng-mouseout="hideTooltip()")
+                {{entry.message}}
+              %td {{entry.timestamp}}
 
