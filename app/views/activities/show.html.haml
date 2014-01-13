@@ -1,9 +1,12 @@
 %div.activity(ng-app="poirot" ng-controller="ActivityController")
   %header
     %a.parent(ng-if="mainActivity.parent_id" ng-click="openActivity(mainActivity.parent_id)")
-    Activity
-    %span.activity-id
-      {{mainActivity.id}}
+    %div.activity-id
+      Activity
+      %b {{mainActivity.id}}
+    %div.activity-fields
+      {{mainActivity.fields}}
+    .blank
 
   %section
     .explorer

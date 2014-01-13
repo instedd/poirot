@@ -31,7 +31,7 @@
   header {
     position: absolute;
     top: 0;
-    height: 40px;
+    max-height: 40px;
     left: 0;
     right: 0;
     background-color: #fdfdfd;
@@ -39,6 +39,7 @@
     margin: 0;
     box-shadow: 0 0 10px rgba(0,0,0,.2);
     padding: 10px;
+    overflow: hidden;
 
     .parent {
       float: left;
@@ -51,9 +52,43 @@
       cursor: pointer;
     }
 
-    .activity-id {
-      font-weight: bold;
+    div.activity-id {
+      float: left;
+      b {
+        font-weight: bold;
+      }
+      margin-right: 20px;
+      margin-bottom: 5px;
     }
+
+    .activity-fields {
+      color: lightgray;
+      font-size: 80%;
+      word-break: break-all;
+    }
+
+    z-index: 100;
+    transition: max-height 0.5s ease;
+
+    .blank {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 15px;
+      background: -moz-linear-gradient(top,  rgba(255,255,255,0.01) 0%, rgba(255,255,255,1) 50%, rgba(255,255,255,1) 100%); /* FF3.6+ */
+      background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(255,255,255,0.01)), color-stop(50%,rgba(255,255,255,1)), color-stop(100%,rgba(255,255,255,1))); /* Chrome,Safari4+ */
+      background: -webkit-linear-gradient(top,  rgba(255,255,255,0.01) 0%,rgba(255,255,255,1) 50%,rgba(255,255,255,1) 100%); /* Chrome10+,Safari5.1+ */
+      background: -o-linear-gradient(top,  rgba(255,255,255,0.01) 0%,rgba(255,255,255,1) 50%,rgba(255,255,255,1) 100%); /* Opera 11.10+ */
+      background: -ms-linear-gradient(top,  rgba(255,255,255,0.01) 0%,rgba(255,255,255,1) 50%,rgba(255,255,255,1) 100%); /* IE10+ */
+      background: linear-gradient(to bottom,  rgba(255,255,255,0.01) 0%,rgba(255,255,255,1) 50%,rgba(255,255,255,1) 100%); /* W3C */
+      filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#03ffffff', endColorstr='#ffffff',GradientType=0 ); /* IE6-9 */
+            
+    }
+  }
+
+  header:hover {
+    max-height: 300px;
   }
 
   section {
@@ -172,6 +207,7 @@
     background-color: white;
     padding-top: 8px;
     padding-bottom: 8px;
+    padding-right: 5px;
     font-size: 90%;
     white-space: normal;
     word-break: break-all;

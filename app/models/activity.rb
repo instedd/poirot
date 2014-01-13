@@ -6,7 +6,7 @@ class Activity
   def self.find(id)
     query = {
       size: 1000,
-      fields: [ '@start', '@end', '@parent', '@pid', '@source' ],
+      fields: [ '@start', '@end', '@parent', '@pid', '@source', '@fields' ],
       filter: {
         and: [
           { term: { '_id' => id } },
@@ -25,7 +25,8 @@ class Activity
       parent = fields['@parent']
       source = fields['@source']
       pid = fields['@pid']
-      activity = new id: id, start: start, stop: stop, parent_id: parent, source: source, pid: pid
+      extra_fields = fields['@fields']
+      activity = new id: id, start: start, stop: stop, parent_id: parent, source: source, pid: pid, fields: extra_fields
       activity
     else
       nil
@@ -35,7 +36,7 @@ class Activity
   def self.find_by_parents(parent_ids)
     query = {
       size: 1000,
-      fields: [ '@start', '@end', '@parent', '@pid', '@source' ],
+      fields: [ '@start', '@end', '@parent', '@pid', '@source', '@fields' ],
       filter: {
         and: [
           { terms: { '@parent' => parent_ids } },
@@ -55,12 +56,13 @@ class Activity
       parent = fields['@parent']
       source = fields['@source']
       pid = fields['@pid']
-      activity = new id: id, start: start, stop: stop, parent_id: parent, source: source, pid: pid
+      extra_fields = fields['@fields']
+      activity = new id: id, start: start, stop: stop, parent_id: parent, source: source, pid: pid, fields: extra_fields
       activity
     end
   end
 
-  attr_reader :id, :entries, :start, :stop, :parent_id, :source, :pid
+  attr_reader :id, :entries, :start, :stop, :parent_id, :source, :pid, :fields
 
   def initialize(params = {})
     @id = params[:id]
@@ -69,6 +71,7 @@ class Activity
     @stop = params[:stop]
     @source = params[:source]
     @pid = params[:pid]
+    @fields = params[:fields]
     @entries = params[:entries] || find_entries
   end
 

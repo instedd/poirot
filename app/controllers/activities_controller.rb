@@ -51,6 +51,7 @@ class ActivitiesController < ApplicationController
       parent_id: activity.parent_id,
       source: activity.source,
       pid: activity.pid,
+      fields: activity.fields,
       entries: activity.entries
     }
   end
