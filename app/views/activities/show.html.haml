@@ -16,7 +16,7 @@
           %th Time
         
     .grid-viewport
-      .message-tooltip.level-icon(ng-show="tooltip.visible" ng-style="tooltip.style" class="{{tooltip.cssClass}}" ng-click="selectEntry(tooltip.index)")
+      .message-tooltip.level-icon(ng-show="tooltip.visible" ng-style="tooltip.style" class="{{tooltip.cssClass}}")
         {{tooltip.message}}
       %table.table.table-striped.table-hover.log-entries
         %colgroup
@@ -25,10 +25,10 @@
           %col.timestamp
         %tbody
           %tr(ng-repeat="entry in entries" ng-click="selectEntry($index)")
-            %td(class="gutter {{entry.selected ? 'selected' : ''}}")
-              %span(ng-if="entry.selected" class="arrow" style="border-right-color: {{entry.activityColor}}")
-              %span.gutter(style="background-color: {{entry.activityColor}}")
-            %td(class="level-icon {{entry.cssClass}}" ng-mouseenter="showTooltip(entry, $event, $index)")
+            %td(class="gutter {{entry.selected ? 'selected' : ''}}")<
+              %span.gutter(style="background-color: {{entry.activityColor}}")<
+              %span(ng-if="entry.selected" class="arrow" style="border-right-color: {{entry.activityColor}}")<>
+            %td(class="level-icon {{entry.cssClass}}" ng-mouseenter="showTooltip(entry, $event)" ng-mouseout="hideTooltip()")
               {{entry.message}}
             %td {{entry.timestamp}}
 

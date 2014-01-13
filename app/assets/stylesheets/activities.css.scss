@@ -104,18 +104,15 @@
       position: relative;
 
       span.gutter {
-        position: absolute;
-        right: 0;
-        top: 0;
-        bottom: 0;
         display: block;
         width: 5px;
+        height: 35px;
+        float: right;
       }
       span.arrow {
-        position: absolute;
-        right: 5px;
-        top: 0;
-        bottom: 0;
+        display: block;
+        float: right;
+        height: 35px;
         border-top: 15px solid transparent;
         border-bottom: 15px solid transparent;
         border-right: 5px solid;
@@ -142,12 +139,16 @@
     font-size: 90%;
     white-space: normal;
     word-break: break-all;
+    pointer-events: none;
   }
 }
 
 .explorer svg {
 	shape-rendering: auto;
   text-rendering: optimizeLegibility;
+  position: absolute;
+  top: 0;
+  bottom: 0;
 }
 
 table.activities {

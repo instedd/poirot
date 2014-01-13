@@ -4,6 +4,7 @@
   $scope.entries = []
   $scope.tooltip = message: '', visible: false, style: {}
   currentSelection = -1
+  flowSVG = $('#flow-viewer')
 
   selectByIndex = (index) ->
     if currentSelection >= 0
@@ -25,19 +26,24 @@
   $scope.selectEntry = (index) ->
     selectByIndex index
 
-  $scope.showTooltip = (entry, event, index) ->
+  $scope.showTooltip = (entry, event) ->
     cell = $(event.target)
-    position = cell.position()
-    left = position.left
-    top = position.top + viewport.scrollTop()
-    $scope.tooltip.message = entry.message
-    $scope.tooltip.index = index
-    $scope.tooltip.cssClass = entry.cssClass
-    $scope.tooltip.style = left: left, top: top, width: cell.outerWidth()
-    $scope.tooltip.visible = true
+    if event.target.scrollWidth > cell.outerWidth()
+      position = cell.position()
+      left = position.left
+      top = position.top + viewport.scrollTop()
+      $scope.tooltip.message = entry.message
+      $scope.tooltip.cssClass = entry.cssClass
+      $scope.tooltip.style = left: left, top: top, width: cell.outerWidth()
+      $scope.tooltip.visible = true
+
+  $scope.hideTooltip = () ->
+    $scope.tooltip.visible = false
 
   updateSize = ->
-    flow.setHeight($('#flow-viewer').height())
+    height = $('.explorer').height()
+    flowSVG.attr('height', "#{height}px")
+    flow.setHeight(height)
     updateScroll()
 
   updateScroll = ->
