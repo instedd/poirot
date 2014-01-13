@@ -2,6 +2,7 @@
   ACTIVITY_COLORS = ['#0099cc', '#ff6600', '#9933cc', '#669900']
 
   $scope.entries = []
+  $scope.tooltip = message: '', visible: false, style: {}
   currentSelection = -1
 
   selectByIndex = (index) ->
@@ -23,6 +24,17 @@
 
   $scope.selectEntry = (index) ->
     selectByIndex index
+
+  $scope.showTooltip = (entry, event, index) ->
+    cell = $(event.target)
+    position = cell.position()
+    left = position.left
+    top = position.top + viewport.scrollTop()
+    $scope.tooltip.message = entry.message
+    $scope.tooltip.index = index
+    $scope.tooltip.cssClass = entry.cssClass
+    $scope.tooltip.style = left: left, top: top, width: cell.outerWidth()
+    $scope.tooltip.visible = true
 
   updateSize = ->
     flow.setHeight($('#flow-viewer').height())

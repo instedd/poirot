@@ -1,3 +1,25 @@
+.level-icon {
+  padding-left: 30px;
+  background-repeat: no-repeat;
+  background-position: 4px 8px;
+
+  &.level-debug {
+    background-image: url(/assets/debug.png);
+  }
+  &.level-info {
+    background-image: url(/assets/info.png);
+  }
+  &.level-warning, &.level-warn {
+    background-image: url(/assets/alert.png);
+  }
+  &.level-error {
+    background-image: url(/assets/error.png);
+  }
+  &.level-fatal, &.level-critical {
+    background-image: url(/assets/fatal.png);
+  }
+}
+
 .activity {
   position: absolute;
   top: 60px;
@@ -61,25 +83,10 @@
     tbody td:nth-child(2) {
       overflow: hidden;
       text-overflow: ellipsis;
-      padding-left: 30px;
-      background-repeat: no-repeat;
-      background-position: 4px center;
+    }
 
-      &.level-debug {
-        background-image: url(/assets/debug.png);
-      }
-      &.level-info {
-        background-image: url(/assets/info.png);
-      }
-      &.level-warning, &.level-warn {
-        background-image: url(/assets/alert.png);
-      }
-      &.level-error {
-        background-image: url(/assets/error.png);
-      }
-      &.level-fatal, &.level-critical {
-        background-image: url(/assets/fatal.png);
-      }
+    tbody td.level-icon {
+      padding-left: 30px;
     }
 
     tbody tr.selected td {
@@ -122,6 +129,19 @@
         }
       }
     }
+  }
+
+  .message-tooltip {
+    position: absolute;
+    border-top: 1px solid #dddddd;
+    border-bottom: 1px solid #dddddd;
+    box-shadow: 0 0 10px rgba(0,0,0,.2);
+    background-color: white;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    font-size: 90%;
+    white-space: normal;
+    word-break: break-all;
   }
 }
 

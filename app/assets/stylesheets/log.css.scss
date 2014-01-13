@@ -2,6 +2,28 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
+.level-debug {
+  color: gray;
+}
+.level-info {
+  color: black;
+}
+.level-notice {
+  color: darkcyan;
+  background-color: azure;
+}
+.level-error, .level-alert, .level-emergency {
+  color: rgb(192,0,0);
+  background-color: #f2dede;
+}
+.level-alert, .level-emergency {
+  font-weight: bold;
+}
+.level-warning, .level-warn {
+  color: orange;
+  background-color: cornsilk;
+}
+
 table.log-entries {
   font-size: 90%;
 
@@ -11,28 +33,6 @@ table.log-entries {
   td:last-child {
     white-space: normal;
     word-break: break-all;
-  }
-
-  .level-debug {
-    color: gray;
-  }
-  .level-info {
-    color: black;
-  }
-  .level-notice {
-    color: darkcyan;
-    background-color: azure;
-  }
-  .level-error, .level-alert, .level-emergency {
-    color: rgb(192,0,0);
-    background-color: #f2dede;
-  }
-  .level-alert, .level-emergency {
-    font-weight: bold;
-  }
-  .level-warning, .level-warn {
-    color: orange;
-    background-color: cornsilk;
   }
 
   td.clickable {
