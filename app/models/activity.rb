@@ -6,7 +6,7 @@ class Activity
   def self.find(id)
     query = {
       size: 1000,
-      fields: [ '@start', '@end', '@parent', '@pid', '@source', '@fields' ],
+      fields: [ '@start', '@end', '@parent', '@pid', '@source', '@fields', '@description' ],
       filter: {
         and: [
           { term: { '_id' => id } },
@@ -26,7 +26,8 @@ class Activity
       source = fields['@source']
       pid = fields['@pid']
       extra_fields = fields['@fields']
-      activity = new id: id, start: start, stop: stop, parent_id: parent, source: source, pid: pid, fields: extra_fields
+      description = fields['@description']
+      activity = new id: id, start: start, stop: stop, parent_id: parent, source: source, pid: pid, fields: extra_fields, description: description
       activity
     else
       nil
@@ -36,7 +37,7 @@ class Activity
   def self.find_by_parents(parent_ids)
     query = {
       size: 1000,
-      fields: [ '@start', '@end', '@parent', '@pid', '@source', '@fields' ],
+      fields: [ '@start', '@end', '@parent', '@pid', '@source', '@fields', '@description' ],
       filter: {
         and: [
           { terms: { '@parent' => parent_ids } },
@@ -57,12 +58,13 @@ class Activity
       source = fields['@source']
       pid = fields['@pid']
       extra_fields = fields['@fields']
-      activity = new id: id, start: start, stop: stop, parent_id: parent, source: source, pid: pid, fields: extra_fields
+      description = fields['@description']
+      activity = new id: id, start: start, stop: stop, parent_id: parent, source: source, pid: pid, fields: extra_fields, description: description
       activity
     end
   end
 
-  attr_reader :id, :entries, :start, :stop, :parent_id, :source, :pid, :fields
+  attr_reader :id, :entries, :start, :stop, :parent_id, :source, :pid, :fields, :description
 
   def initialize(params = {})
     @id = params[:id]
@@ -72,6 +74,7 @@ class Activity
     @source = params[:source]
     @pid = params[:pid]
     @fields = params[:fields]
+    @description = params[:description]
     @entries = params[:entries] || find_entries
   end
 

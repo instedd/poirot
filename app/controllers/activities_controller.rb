@@ -52,6 +52,7 @@ class ActivitiesController < ApplicationController
       source: activity.source,
       pid: activity.pid,
       fields: activity.fields,
+      description: activity.description,
       entries: activity.entries
     }
   end
@@ -72,7 +73,7 @@ class ActivitiesController < ApplicationController
     unless qs.blank?
       query[:query] = {
         query_string: {
-          default_field: 'description',
+          default_field: '@description',
           query: qs
         }
       }
@@ -89,6 +90,7 @@ class ActivitiesController < ApplicationController
           stop: activity['@end'],
           source: activity['@source'],
           parent: activity['@parent'],
+          description: activity['@description'],
           fields: activity['@fields']
         }
       end

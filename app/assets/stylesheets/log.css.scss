@@ -24,17 +24,20 @@
   background-color: cornsilk;
 }
 
+table.log-entries-header {
+  font-size: 90%;
+  table-layout: fixed;
+}
+
 table.log-entries {
   font-size: 90%;
+  table-layout: fixed;
 
   td {
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
-  td:last-child {
-    white-space: normal;
-    word-break: break-all;
-  }
-
   td.clickable {
     cursor: pointer;
     &:hover {
@@ -42,8 +45,6 @@ table.log-entries {
       color: blue;
     }
   }
-
-  margin-bottom: 50px;
 }
 
 .slideLeft {
@@ -57,7 +58,7 @@ table.log-entries {
   left: 110%;
 }
 
-.log-pager {
+.pager-footer {
   position: fixed;
   bottom: 0;
   right: 0;
@@ -65,11 +66,34 @@ table.log-entries {
   background: white;
 
   &.floating {
-    box-shadow: 0 0 5px rgba(0,0,0,.5);
+    box-shadow: 0 0 15px rgba(0,0,0,.5);
   }
 
   .pager {
     margin: 10px 25px;
+  }
+}
+
+.log-index {
+  position: absolute;
+  top: 60px;
+  bottom: 50px;
+  left: 20px;
+  right: 20px;
+
+  .grid-header {
+    position: absolute;
+    height: 68px;
+    padding: 0 5px;
+  }
+
+  .grid-viewport {
+    position: absolute;
+    top: 68px;
+    bottom: 0;
+    overflow: auto;
+    padding: 0 5px;
+
   }
 }
 

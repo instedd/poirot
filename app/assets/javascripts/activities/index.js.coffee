@@ -18,7 +18,7 @@
         $scope.queryError = false
         $scope.totalCount = data.total
         data.activities = data.activities.sort (a,b) ->
-          if a.timestamp > b.timestamp then 1 else -1
+          if a.start > b.start then 1 else -1
         $scope.activities = data.activities
 
       if wait
@@ -50,7 +50,7 @@
       $scope.runQuery()
 
   $scope.nextPage = () ->
-    if $scope.page * $scope.pageSize <= $scope.totalEntries
+    if $scope.page * $scope.pageSize <= $scope.totalCount
       $scope.page += 1
       table.addClass('slideLeft')
       query true
@@ -71,7 +71,7 @@
     Math.min($scope.page * $scope.pageSize, $scope.totalCount)
 
   updatePager = ->
-    pagination = $('.activities-pager')
+    pagination = $('.pager-footer')
     scrollBottom = $(document).height() - $(window).height() - $(window).scrollTop()
     if scrollBottom <= 0
       pagination.removeClass('floating')

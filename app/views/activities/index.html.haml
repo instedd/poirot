@@ -7,23 +7,32 @@
           %button.btn.btn-default(ng-click="runQuery()") Query
 
     %table.table.table-stripped.table-hover.activities
+      %colgroup
+        %col.short-id
+        %col.short-id
+        %col
+        %col.timestamp
+        %col.timestamp
+        %col.source
       %thead
         %tr
           %th Activity
+          %th Parent
+          %th Description
           %th Start
           %th End
-          %th Parent
           %th Source
       %tbody
         %tr(ng-repeat="activity in activities" ng-click="open(activity.id)")
-          %td.clickable {{activity.id}}
+          %td.clickable(title="{{activity.id}}") {{activity.id | limitTo: 8}}
+          %td(title="{{activity.parent}}" ng-click="open(activity.parent, $event)" ng-class="{'clickable': activity.parent}")
+            {{activity.parent | limitTo: 8}}
+          %td.description {{activity.description}}
           %td {{activity.start}}
           %td {{activity.stop}}
-          %td(ng-click="open(activity.parent, $event)" ng-class="{'clickable': activity.parent}")
-            {{activity.parent}}
           %td {{activity.source}}
 
-  %div.row.activities-pager(ng-if="shouldPage()")
+  %div.row.pager-footer(ng-if="shouldPage()")
     %ul.pager
       %li.previous
         %a(href="#" ng-click="prevPage()") &larr; Older

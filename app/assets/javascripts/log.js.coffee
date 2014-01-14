@@ -3,8 +3,24 @@
   $scope.totalEntries = 0
   $scope.page = 1
   $scope.pageSize = 20
+  $scope.tooltip = message: '', visible: false, style: {}
 
   table = $('.log-entries')
+  viewport = $('.grid-viewport')
+
+  $scope.showTooltip = (entry, event) ->
+    cell = $(event.target)
+    if event.target.scrollWidth > cell.outerWidth()
+      position = cell.position()
+      left = position.left
+      top = position.top + viewport.scrollTop()
+      $scope.tooltip.message = entry.message
+      $scope.tooltip.cssClass = entry.cssClass
+      $scope.tooltip.style = left: left, top: top, width: cell.outerWidth()
+      $scope.tooltip.visible = true
+
+  $scope.hideTooltip = () ->
+    $scope.tooltip.visible = false
 
   query = (wait) ->
     queryData = { q: $scope.queryString, from: ($scope.page - 1) * $scope.pageSize }
@@ -72,8 +88,8 @@
     Math.min($scope.page * $scope.pageSize, $scope.totalEntries)
 
   updatePager = ->
-    pagination = $('.log-pager')
-    scrollBottom = $(document).height() - $(window).height() - $(window).scrollTop()
+    pagination = $('.pager-footer')
+    scrollBottom = table.height() - viewport.height() - viewport.scrollTop()
     if scrollBottom <= 0
       pagination.removeClass('floating')
     else
@@ -83,7 +99,7 @@
     if entry.activity.toLowerCase() != 'undefined'
       location.href = "/activities/#{entry.activity}"
 
-  $(window).scroll updatePager
+  viewport.on 'scroll', updatePager
 
   query()
 ]

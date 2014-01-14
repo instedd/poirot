@@ -1,5 +1,37 @@
+col.gutter {
+  width: 13px;
+}
+col.timestamp {
+  width: 200px;
+}
+col.short-id {
+  width: 90px;
+}
+col.source {
+  width: 120px;
+}
+col.pid {
+  width: 100px;
+}
+
+.message-tooltip {
+  position: absolute;
+  border-top: 1px solid #dddddd;
+  border-bottom: 1px solid #dddddd;
+  box-shadow: 0 0 10px rgba(0,0,0,.2);
+  background-color: white;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-right: 5px;
+  font-size: 90%;
+  white-space: normal;
+  word-break: break-all;
+  pointer-events: none;
+  z-index: 90;
+}
+
 .level-icon {
-  padding-left: 30px;
+  padding-left: 30px !important;
   background-repeat: no-repeat;
   background-position: 4px 8px;
 
@@ -61,8 +93,17 @@
       margin-bottom: 5px;
     }
 
+    .activity-details h5 {
+      font-size: 100%;
+      margin-top: 2px;
+      margin-bottom: 10px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
     .activity-fields {
-      color: lightgray;
+      color: #888;
       font-size: 80%;
       word-break: break-all;
     }
@@ -137,13 +178,6 @@
     }
   }
 
-  col.gutter {
-    width: 13px;
-  }
-  col.timestamp {
-    width: 200px;
-  }
-
   table.log-entries {
     table-layout: fixed;
     margin-bottom: 0;
@@ -199,22 +233,6 @@
       }
     }
   }
-
-  .message-tooltip {
-    position: absolute;
-    border-top: 1px solid #dddddd;
-    border-bottom: 1px solid #dddddd;
-    box-shadow: 0 0 10px rgba(0,0,0,.2);
-    background-color: white;
-    padding-top: 8px;
-    padding-bottom: 8px;
-    padding-right: 5px;
-    font-size: 90%;
-    white-space: normal;
-    word-break: break-all;
-    pointer-events: none;
-    z-index: 90;
-  }
 }
 
 .explorer svg {
@@ -226,10 +244,15 @@
 }
 
 table.activities {
+  table-layout: fixed;
   font-size: 90%;
   td {
     white-space: nowrap;
     cursor: default;
+  }
+  td.description {
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   td.clickable {
     cursor: pointer;

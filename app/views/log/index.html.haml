@@ -1,30 +1,45 @@
-%div(ng-app="poirot" ng-controller="LogController")
-  %div.row
-    %div.col-md-12
-      %div.input-group(ng-class="{'has-error': queryError}")
-        %input.form-control(ng-model="queryString" ng-keypress="queryKeyPress($event)")
-        %span.input-group-btn
-          %button.btn.btn-default(ng-click="runQuery()") Query
+%div.log-index(ng-app="poirot" ng-controller="LogController")
+  .grid-header
+    %div.input-group(ng-class="{'has-error': queryError}")
+      %input.form-control(ng-model="queryString" ng-keypress="queryKeyPress($event)")
+      %span.input-group-btn
+        %button.btn.btn-default(ng-click="runQuery()") Query
 
-    %table.table.table-stripped.table-hover.log-entries
+    %table.table.table-stripped.table-hover.log-entries-header
+      %colgroup
+        %col
+        %col.timestamp
+        %col.short-id
+        %col.pid
+        %col.source
       %thead
         %tr
+          %th Message
           %th Time
           %th Activity
           %th Pid
-          %th Level
           %th Source
-          %th Message
+
+  .grid-viewport
+    .message-tooltip.level-icon(ng-show="tooltip.visible" ng-style="tooltip.style" class="{{tooltip.cssClass}}")
+      {{tooltip.message}}
+    %table.table.table-stripped.table-hover.log-entries
+      %colgroup
+        %col
+        %col.timestamp
+        %col.short-id
+        %col.pid
+        %col.source
       %tbody
         %tr(ng-repeat="entry in entries" class="{{entry.cssClass}}")
+          %td.message(class="level-icon {{entry.cssClass}}" ng-mouseenter="showTooltip(entry, $event)" ng-mouseout="hideTooltip()")
+            {{entry.message}}
           %td {{entry.timestamp}}
-          %td(ng-class="{'clickable': entry.activity.toLowerCase() != 'undefined'}" ng-click="openActivity(entry)") {{entry.activity}}
+          %td(ng-class="{'clickable': entry.activity.toLowerCase() != 'undefined'}" ng-click="openActivity(entry)") {{entry.activity | limitTo: 8}}
           %td {{entry.pid}}
-          %td {{entry.level}}
           %td {{entry.source}}
-          %td {{entry.message}}
 
-  %div.row.log-pager(ng-if="shouldPage()")
+  %div.row.pager-footer(ng-if="shouldPage()")
     %ul.pager
       %li.previous
         %a(href="#" ng-click="prevPage()") &larr; Older
