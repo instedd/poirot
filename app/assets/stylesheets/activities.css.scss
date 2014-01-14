@@ -67,9 +67,6 @@
       word-break: break-all;
     }
 
-    z-index: 100;
-    transition: max-height 0.5s ease;
-
     .blank {
       position: absolute;
       bottom: 0;
@@ -85,10 +82,14 @@
       filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#03ffffff', endColorstr='#ffffff',GradientType=0 ); /* IE6-9 */
             
     }
+
+    z-index: 100;
+    transition: max-height 0.5s ease;
   }
 
   header:hover {
     max-height: 300px;
+    box-shadow: 0 0 15px rgba(0,0,0,.5);
   }
 
   section {
@@ -212,6 +213,7 @@
     white-space: normal;
     word-break: break-all;
     pointer-events: none;
+    z-index: 90;
   }
 }
 
