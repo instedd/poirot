@@ -10,18 +10,18 @@
 }
 .level-notice {
   color: darkcyan;
-  background-color: azure;
+  background-color: azure !important;
 }
 .level-error, .level-alert, .level-emergency {
   color: rgb(192,0,0);
-  background-color: #f2dede;
+  background-color: #f2dede !important;
 }
 .level-alert, .level-emergency {
   font-weight: bold;
 }
 .level-warning, .level-warn {
   color: orange;
-  background-color: cornsilk;
+  background-color: cornsilk !important;
 }
 
 table.log-entries-header {

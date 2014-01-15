@@ -66,8 +66,10 @@
     # build events vector for flow component while calculating necessary lanes
     events = for entry, i in entries
       do (entry) ->
-        primary = (lanes[entry.source] = lanes[entry.source] or {})
-        secondary = (primary[entry.pid] = primary[entry.pid] or nextLane++)
+        psel = entry.source
+        ssel = entry.pid + entry.activity
+        primary = (lanes[psel] = lanes[psel] or {})
+        secondary = (primary[ssel] = primary[ssel] or nextLane++)
         aid = if acts[entry.activity]
           acts[entry.activity]
         else

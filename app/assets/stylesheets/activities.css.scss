@@ -41,6 +41,9 @@ col.pid {
   &.level-info {
     background-image: url(/assets/info.png);
   }
+  &.level-notice {
+    background-image: url(/assets/notice.png);
+  }
   &.level-warning, &.level-warn {
     background-image: url(/assets/alert.png);
   }
@@ -246,6 +249,7 @@ col.pid {
 table.activities {
   table-layout: fixed;
   font-size: 90%;
+  margin-bottom: 50px;
   td {
     white-space: nowrap;
     cursor: default;
