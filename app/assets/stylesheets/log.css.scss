@@ -12,11 +12,11 @@
   color: darkcyan;
   background-color: azure !important;
 }
-.level-error, .level-alert, .level-emergency {
+.level-error, .level-alert, .level-emergency, .level-fatal, .level-critical {
   color: rgb(192,0,0);
   background-color: #f2dede !important;
 }
-.level-alert, .level-emergency {
+.level-alert, .level-emergency, .level-fatal, .level-critical {
   font-weight: bold;
 }
 .level-warning, .level-warn {

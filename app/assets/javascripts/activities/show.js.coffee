@@ -89,10 +89,13 @@
     # finds the lane in which the given activity has the last event before given time
     findBestLane = (aid, time) ->
       best = 0
-      for event in events when event.time <= time
+      for event in events
         do (event) ->
           if event.activity == aid
-            best = event.lane
+            if event.time <= time
+              best = event.lane
+            else if best == 0
+              best = event.lane
       best
 
     # add events for forks
