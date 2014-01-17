@@ -1,81 +1,24 @@
 class Activity
-  def self.index
-    'poirot-*'
+  attr_reader :id, :start, :stop, :parent_id, :source, :pid, :fields, :description
+
+  def initialize(hit, entries = nil)
+    @id = hit['_id']
+
+    source = hit['fields'] || hit['_source']
+
+    @start = source['@start']
+    @stop = source['@end']
+    @parent_id = source['@parent']
+    @source = source['@source']
+    @pid = source['@pid']
+    @fields = source['@fields']
+    @description = source['@description']
+
+    @entries = entries
   end
 
-  def self.find(id)
-    query = {
-      size: 1000,
-      fields: [ '@start', '@end', '@parent', '@pid', '@source', '@fields', '@description' ],
-      filter: {
-        and: [
-          { term: { '_id' => id } },
-          { term: { '_type' => 'activity' } }
-        ]
-      }
-    }
-    response = Elasticsearch.client.search index: index, body: query
-    puts "Query took #{response['took']} ms"
-
-    hit = response['hits']['hits'].first
-    if hit
-      fields = hit['fields']
-      start = fields['@start']
-      stop = fields['@end']
-      parent = fields['@parent']
-      source = fields['@source']
-      pid = fields['@pid']
-      extra_fields = fields['@fields']
-      description = fields['@description']
-      activity = new id: id, start: start, stop: stop, parent_id: parent, source: source, pid: pid, fields: extra_fields, description: description
-      activity
-    else
-      nil
-    end
-  end
-
-  def self.find_by_parents(parent_ids)
-    query = {
-      size: 1000,
-      fields: [ '@start', '@end', '@parent', '@pid', '@source', '@fields', '@description' ],
-      filter: {
-        and: [
-          { terms: { '@parent' => parent_ids } },
-          { term: { '_type' => 'activity' } }
-        ]
-      }
-    }
-    response = Elasticsearch.client.search index: index, body: query
-    puts "Query took #{response['took']} ms"
-
-    # FIXME: fetch the entries of all activities in one query
-    response['hits']['hits'].map do |hit|
-      id = hit['_id']
-      fields = hit['fields']
-      start = fields['@start']
-      stop = fields['@end']
-      parent = fields['@parent']
-      source = fields['@source']
-      pid = fields['@pid']
-      extra_fields = fields['@fields']
-      description = fields['@description']
-      activity = new id: id, start: start, stop: stop, parent_id: parent, source: source, pid: pid, fields: extra_fields, description: description
-      activity
-    end
-  end
-
-  attr_reader :id, :entries, :start, :stop, :parent_id, :source, :pid, :fields, :description
-
-  def initialize(params = {})
-    @id = params[:id]
-    @parent_id = params[:parent_id]
-    @start = params[:start]
-    @stop = params[:stop]
-    @source = params[:source]
-    @pid = params[:pid]
-    @fields = params[:fields]
-    @description = params[:description]
-    @entries = params[:entries] || find_entries
+  def entries
+    @entries ||= LogEntry.find_by_activity_id id
   end
 
   def inspect
@@ -90,35 +33,71 @@ class Activity
     end
   end
 
-  private
+  def as_json(options = nil)
+    # force loading of entries
+    entries
+    super
+  end
 
-  def find_entries
+  def self.base_query(options = {})
+    size = options[:size] || 1000
+    from = options[:from] || 0
+
     query = {
-      size: 1000,
-      sort: [ '@timestamp' ],
-      fields: [ '@timestamp', '@level', '@source', '@pid', '@message' ],
+      size: size,
+      from: from,
+      sort: [ '@start' ],
       filter: {
         and: [
-          { term: { '@activity' => id } },
-          { term: { '_type' => 'logentry' } }
+          { term: { '_type' => 'activity' } }
         ]
       }
     }
-    response = Elasticsearch.client.search index: self.class.index, body: query
-    puts "Query took #{response['took']} ms"
-    map_entries(response['hits']['hits'])
   end
 
-  def map_entries(hits)
-    hits.map do |e|
-      fields = e['fields']
-      {
-        timestamp: fields['@timestamp'],
-        level: fields['@level'],
-        source: fields['@source'],
-        pid: fields['@pid'],
-        message: fields['@message']
-      }
+  def self.find(id)
+    query = base_query
+    query[:filter][:and] << { term: { '_id' => id } }
+    response = Backend.search_all query
+
+    hit = response['hits']['hits'].first
+    if hit
+      new hit
+    else
+      nil
+    end
+  end
+
+  def self.find_by_parents(parent_ids)
+    query = base_query
+    query[:filter][:and] << { terms: { '@parent' => parent_ids } }
+    response = Backend.search_all query
+    # FIXME: fetch the entries of all activities in one query
+    Result.new(response).items
+  end
+
+  def self.query(qs, options = {})
+    query = base_query(options)
+    query[:query] = { query_string: { default_field: '@description', query: qs } } unless qs.blank?
+
+    Result.new Backend.search_all(query)
+  end
+
+  class Result
+    attr_reader :response
+
+    def initialize(response)
+      @response = response
+    end
+
+    def total
+      @total ||= @response['hits']['total']
+    end
+
+    def items
+      @items ||= @response['hits']['hits'].map do |hit|
+        Activity.new hit
+      end
     end
   end
 end
