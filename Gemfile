@@ -36,6 +36,8 @@ gem 'bootstrap-sass-rails'
 
 group :development, :test do
   gem 'pry-byebug'
+  gem 'capistrano'
+  gem 'rvm-capistrano'
 end
 
 group :doc do
@@ -48,9 +50,6 @@ end
 
 # Use unicorn as the app server
 # gem 'unicorn'
-
-# Use Capistrano for deployment
-# gem 'capistrano', group: :development
 
 # Use debugger
 # gem 'debugger', group: [:development, :test]
