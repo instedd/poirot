@@ -1,22 +1,10 @@
 GIT
-  remote: git://github.com/elasticsearch/elasticsearch-ruby.git
-  revision: 68b1e621e9b3a0ffad328e3299122b677b3309b3
-  specs:
-    elasticsearch (0.4.3)
-      elasticsearch-api (= 0.4.3)
-      elasticsearch-transport (= 0.4.3)
-    elasticsearch-api (0.4.3)
-      multi_json
-    elasticsearch-transport (0.4.3)
-      faraday
-      multi_json
-
-GIT
   remote: https://bitbucket.org/instedd/hercule
-  revision: 426ad7a0ca41746a132acf60875622dea2d7dc11
+  revision: bc621ca6ad143c8a0ca22318a908838e434952d8
   branch: master
   specs:
-    hercule (0.0.1)
+    hercule (0.0.2)
+      elasticsearch
 
 GEM
   remote: https://rubygems.org/
@@ -71,10 +59,18 @@ GEM
     d3-rails (3.3.7)
       railties (>= 3.1)
     debugger-linecache (1.2.0)
+    elasticsearch (0.4.7)
+      elasticsearch-api (= 0.4.7)
+      elasticsearch-transport (= 0.4.7)
+    elasticsearch-api (0.4.7)
+      multi_json
+    elasticsearch-transport (0.4.7)
+      faraday
+      multi_json
     erubis (2.7.0)
     execjs (2.0.2)
-    faraday (0.8.8)
-      multipart-post (~> 1.2.0)
+    faraday (0.9.0)
+      multipart-post (>= 1.2, < 3)
     haml (4.0.4)
       tilt
     haml-rails (0.5.3)
@@ -98,7 +94,7 @@ GEM
     mime-types (1.25.1)
     minitest (4.7.5)
     multi_json (1.8.2)
-    multipart-post (1.2.0)
+    multipart-post (2.0.0)
     net-scp (1.1.2)
       net-ssh (>= 2.6.5)
     net-ssh (2.7.0)
@@ -180,7 +176,6 @@ DEPENDENCIES
   capistrano
   coffee-rails (~> 4.0.0)
   d3-rails
-  elasticsearch!
   haml-rails
   hercule!
   jbuilder (~> 1.2)
