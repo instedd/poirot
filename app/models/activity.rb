@@ -35,7 +35,7 @@ class Activity
 
   def as_json(options = nil)
     # force loading of entries
-    entries
+    entries if options and options[:with_entries]
     super
   end
 

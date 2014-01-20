@@ -22,7 +22,7 @@
   $scope.hideTooltip = () ->
     $scope.tooltip.visible = false
 
-  query = (wait) ->
+  query = () ->
     queryData = { q: $scope.queryString, from: ($scope.page - 1) * $scope.pageSize }
     $.getJSON '/log', queryData, (data) ->
       if data.result == 'error'
@@ -37,18 +37,10 @@
           if a.timestamp > b.timestamp then 1 else -1
         $scope.entries = addCssClasses(data.entries)
 
-      if wait
-        table.off 'transitionend'
-        table.on 'transitionend', ->
-          finishQuery()
-          table.off 'transitionend'
-        setTimeout((-> finishQuery()), 100)
-      else
-        finishQuery()
+      finishQuery()
 
   finishQuery = ->
     $scope.$apply()
-    table.removeClass('slideLeft').removeClass('slideRight')
     updatePager()
 
   $scope.runQuery = () ->
@@ -69,14 +61,12 @@
   $scope.nextPage = () ->
     if $scope.page * $scope.pageSize <= $scope.totalEntries
       $scope.page += 1
-      table.addClass('slideLeft')
-      query true
+      query()
 
   $scope.prevPage = () ->
     if $scope.page > 1
-      table.addClass('slideRight')
       $scope.page -= 1
-      query true
+      query()
 
   $scope.shouldPage = () ->
     $scope.totalEntries > $scope.pageSize

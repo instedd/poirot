@@ -6,7 +6,7 @@
 
   table = $('.activities')
 
-  query = (wait) ->
+  query = () ->
     queryData = { q: $scope.queryString, from: ($scope.page - 1) * $scope.pageSize }
     $.getJSON '/activities', queryData, (data) ->
       if data.result == 'error'
@@ -21,14 +21,7 @@
           if a.start > b.start then 1 else -1
         $scope.activities = data.activities
 
-      if wait
-        table.off 'transitionend'
-        table.on 'transitionend', ->
-          finishQuery()
-          table.off 'transitionend'
-        setTimeout((-> finishQuery()), 100)
-      else
-        finishQuery()
+      finishQuery()
 
   $scope.open = (id, evt) ->
     if id
@@ -38,7 +31,6 @@
 
   finishQuery = ->
     $scope.$apply()
-    table.removeClass('slideLeft').removeClass('slideRight')
     updatePager()
 
   $scope.runQuery = () ->
@@ -52,14 +44,12 @@
   $scope.nextPage = () ->
     if $scope.page * $scope.pageSize <= $scope.totalCount
       $scope.page += 1
-      table.addClass('slideLeft')
-      query true
+      query()
 
   $scope.prevPage = () ->
     if $scope.page > 1
-      table.addClass('slideRight')
       $scope.page -= 1
-      query true
+      query()
 
   $scope.shouldPage = () ->
     $scope.totalCount > $scope.pageSize

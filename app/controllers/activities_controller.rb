@@ -34,7 +34,7 @@ class ActivitiesController < ApplicationController
         else
           data = []
         end
-        render json: data
+        render json: data.as_json(with_entries: true)
       }
     end
   end
