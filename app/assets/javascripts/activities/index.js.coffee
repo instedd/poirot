@@ -18,7 +18,7 @@
         $scope.queryError = false
         $scope.totalCount = data.total
         data.activities = data.activities.sort (a,b) ->
-          if a.start > b.start then 1 else -1
+          if a.start < b.start then 1 else -1
         $scope.activities = data.activities
 
       finishQuery()

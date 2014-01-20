@@ -24,7 +24,14 @@ class LogEntry
 
   def self.query(qs, options = {})
     query = base_query(options)
-    query[:query] = { query_string: { default_field: '@message', query: qs } } unless qs.blank?
+    query[:sort] = [ { '@timestamp' => { order: "desc" } } ]
+    query[:query] = { 
+      query_string: { 
+        default_field: '@message', 
+        default_operator: 'AND', 
+        query: qs 
+      }
+    } unless qs.blank?
 
     Result.new Backend.search_all(query)
   end
@@ -36,7 +43,6 @@ class LogEntry
     query = {
       size: size,
       from: from,
-      sort: [ '@timestamp' ],
       filter: {
         and: [
           { term: { '_type' => 'logentry' } }

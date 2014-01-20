@@ -34,7 +34,7 @@
         $scope.queryError = false
         $scope.totalEntries = data.total
         data.entries = data.entries.sort (a,b) ->
-          if a.timestamp > b.timestamp then 1 else -1
+          if a.timestamp < b.timestamp then 1 else -1
         $scope.entries = addCssClasses(data.entries)
 
       finishQuery()

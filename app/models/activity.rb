@@ -46,7 +46,6 @@ class Activity
     query = {
       size: size,
       from: from,
-      sort: [ '@start' ],
       filter: {
         and: [
           { term: { '_type' => 'activity' } }
@@ -78,7 +77,14 @@ class Activity
 
   def self.query(qs, options = {})
     query = base_query(options)
-    query[:query] = { query_string: { default_field: '@description', query: qs } } unless qs.blank?
+    query[:sort] = [ { '@start' => { order: 'desc' } } ]
+    query[:query] = { 
+      query_string: { 
+        default_field: '@description', 
+        default_operator: 'AND',
+        query: qs 
+      } 
+    } unless qs.blank?
 
     Result.new Backend.search_all(query)
   end
