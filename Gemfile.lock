@@ -1,6 +1,6 @@
 GIT
   remote: https://bitbucket.org/instedd/hercule
-  revision: bc621ca6ad143c8a0ca22318a908838e434952d8
+  revision: 4cee6bfc26e49084cc987f9429fb8c1e1d223492
   branch: master
   specs:
     hercule (0.0.2)
