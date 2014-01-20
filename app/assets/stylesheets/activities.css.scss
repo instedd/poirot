@@ -36,22 +36,22 @@ col.pid {
   background-position: 4px 8px;
 
   &.level-debug {
-    background-image: url(/assets/debug.png);
+    background-image: asset-url("debug.png");
   }
   &.level-info {
-    background-image: url(/assets/info.png);
+    background-image: asset-url("info.png");
   }
   &.level-notice {
-    background-image: url(/assets/notice.png);
+    background-image: asset-url("notice.png");
   }
   &.level-warning, &.level-warn {
-    background-image: url(/assets/alert.png);
+    background-image: asset-url("alert.png");
   }
   &.level-error {
-    background-image: url(/assets/error.png);
+    background-image: asset-url("error.png");
   }
   &.level-fatal, &.level-critical {
-    background-image: url(/assets/fatal.png);
+    background-image: asset-url("fatal.png");
   }
 }
 
@@ -78,7 +78,7 @@ col.pid {
 
     .parent {
       float: left;
-      background-image: url(/assets/parent.png);
+      background-image: asset-url("parent.png");
       background-repeat: no-repeat;
       background-position: center center;
       width: 20px;
@@ -124,7 +124,7 @@ col.pid {
       background: -ms-linear-gradient(top,  rgba(255,255,255,0.01) 0%,rgba(255,255,255,1) 50%,rgba(255,255,255,1) 100%); /* IE10+ */
       background: linear-gradient(to bottom,  rgba(255,255,255,0.01) 0%,rgba(255,255,255,1) 50%,rgba(255,255,255,1) 100%); /* W3C */
       filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#03ffffff', endColorstr='#ffffff',GradientType=0 ); /* IE6-9 */
-            
+
     }
 
     z-index: 100;
