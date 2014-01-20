@@ -6,7 +6,7 @@ class ActivitiesController < ApplicationController
         from = params[:from] || 0
         page_size = 20
         begin
-          result = Activity.query(params[:q], from: from, size: page_size)
+          result = Hercule::Activity.query(params[:q], from: from, size: page_size)
           render json: { result: 'ok', activities: result.items, total: result.total }.to_json
         rescue => e
           response = JSON.parse(e.message[6..-1])
@@ -20,7 +20,7 @@ class ActivitiesController < ApplicationController
     respond_to do |format|
       format.html
       format.json {
-        main = Activity.find(params[:id])
+        main = Hercule::Activity.find(params[:id])
 
         if main
           data = [main]
@@ -28,7 +28,7 @@ class ActivitiesController < ApplicationController
           children = [main]
           while not children.empty?
             ids = children.map(&:id)
-            children = Activity.find_by_parents(ids)
+            children = Hercule::Activity.find_by_parents(ids)
             data = data + children
           end
         else

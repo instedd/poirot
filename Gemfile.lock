@@ -11,6 +11,13 @@ GIT
       faraday
       multi_json
 
+GIT
+  remote: https://bitbucket.org/instedd/hercule
+  revision: 426ad7a0ca41746a132acf60875622dea2d7dc11
+  branch: master
+  specs:
+    hercule (0.0.1)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -175,6 +182,7 @@ DEPENDENCIES
   d3-rails
   elasticsearch!
   haml-rails
+  hercule!
   jbuilder (~> 1.2)
   jquery-rails
   pry-byebug

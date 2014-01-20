@@ -6,7 +6,7 @@ class LogController < ApplicationController
         from = params[:from] || 0
         page_size = 20
         begin
-          result = LogEntry.query(params[:q], from: from, size: page_size)
+          result = Hercule::LogEntry.query(params[:q], from: from, size: page_size)
           render json: { result: 'ok', entries: result.items, total: result.total }.to_json
         rescue => e
           response = JSON.parse(e.message[6..-1])

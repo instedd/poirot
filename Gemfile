@@ -28,6 +28,7 @@ gem 'turbolinks'
 gem 'jbuilder', '~> 1.2'
 
 gem 'elasticsearch', git: 'git://github.com/elasticsearch/elasticsearch-ruby.git'
+gem 'hercule', git: 'https://bitbucket.org/instedd/hercule', branch: 'master'
 
 gem 'd3-rails'
 gem 'haml-rails'
