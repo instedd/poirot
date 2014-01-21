@@ -27,7 +27,7 @@ gem 'turbolinks'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 gem 'jbuilder', '~> 1.2'
 
-gem 'hercule', git: 'https://bitbucket.org/instedd/hercule', branch: 'master'
+gem 'hercule', path: '.'
 
 gem 'd3-rails'
 gem 'haml-rails'

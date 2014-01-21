@@ -1,7 +1,5 @@
-GIT
-  remote: https://bitbucket.org/instedd/hercule
-  revision: 4cee6bfc26e49084cc987f9429fb8c1e1d223492
-  branch: master
+PATH
+  remote: .
   specs:
     hercule (0.0.2)
       elasticsearch
