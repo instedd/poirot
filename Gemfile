@@ -36,7 +36,7 @@ gem 'bootstrap-sass-rails'
 
 group :development, :test do
   gem 'pry-byebug'
-  gem 'capistrano'
+  gem 'capistrano', '~> 2.0'
   gem 'rvm-capistrano'
 end
 
