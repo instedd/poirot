@@ -1,32 +1,32 @@
 function Flow(containerId) {
+    
+    EventDispatcher.call(this);
+    InvalidateElement.call(this);
 
-    var _self = this;
+    var self = this;
     var _container = document.getElementById(containerId);
     var _svg = Snap("#" + containerId);
-    var _background;
-    var _flow;
-    var _connector;
-    var _targetAt;
-    var _height = 0;
     var _width = 0;
+    var _height = 0;
     var _circleRadius = 4;
     var _circleStroke = 2;
     var _curveRadius = 6;
     var _laneWidth = 25;
     var _slotHeight = _circleRadius * 2 + _curveRadius * 2;
-    var _interval = [];
     var _lanes = [];
     var _levels = [];
     var _activities = [];
     var _events = [];
-    var _selected;
-    var _min;
-    var _max;
     var _scroll = 0;
     var _contentHeight = 0;
-    var _windowHeight = 0;
-            
-    _self.setScroll = function(scroll, contentHeight, windowHeight) {
+    var _windowHeight = 0;  
+    var _flow;
+    var _connector;
+    var _selected;
+    var _targetAt;
+    self.invalidate();
+
+    self.setScroll = function(scroll, contentHeight, windowHeight) {
         _scroll = scroll;
         _contentHeight = contentHeight;
         _windowHeight = windowHeight;
@@ -51,7 +51,7 @@ function Flow(containerId) {
                 commands += "Q" + ((start.x + pivot.x) / 2) + " " + start.y + " " + pivot.x + " " + pivot.y;
                 commands += "Q" + ((pivot.x + end.x) / 2) + " " + end.y + " " + end.x + " " + end.y;
                 var connector = _svg.path(commands);
-                connector.attr({
+                _connector.attr({
                     fill:"none",
                     stroke:_activities[_selected.activity].color,
                     strokeWidth:getStrokeWidth(0),
@@ -63,16 +63,26 @@ function Flow(containerId) {
         }
     }
 
-    _self.selectById = function(id) {
+    self.setHeight = function (height) {
+        _height = height;
+        self.invalidate();
+    }
+
+    self.setTargetAt = function(y) {
+        _targetAt = y;
+        self.setScroll(_scroll, _contentHeight, _windowHeight);
+    }
+
+    self.selectById = function(id) {
         if(_selected != undefined && _selected.id == id) {
             _selected = undefined;
-            invalidate();
+            self.invalidate();
             return;
         }
         _events.every(function (entry) {
             if(entry.id == id) {
                 _selected = entry;
-                invalidate();
+                self.invalidate();
                 return false;
             } else {
                 return true;
@@ -80,35 +90,11 @@ function Flow(containerId) {
         });
     }
 
-    _self.setTargetAt = function(y) {
-        _targetAt = y;
-        _self.setScroll(_scroll, _contentHeight, _windowHeight);
-    }
-
-    _self.render = function() {
-        resetInterval();
-        _svg.clear();
-        _background = _svg.g();
-        var boundingBox = {x:0, y:0, width:0, height:0};
-        _lanes.forEach(function (entry) {
-            var lane = drawLane(entry.length, boundingBox.x + boundingBox.width, 0, _height);
-            _background.add(lane);
-            boundingBox = lane.getBBox()
-        });
-        _width = boundingBox.x + boundingBox.width + _laneWidth;
-        _container.setAttribute("width", _width + "px");
-        _flow = _svg.g();
-        _activities.forEach(function(entry) {
-            var activity = drawActivity(entry);
-            _flow.add(activity);
-        });
-        _connector = _svg.g();
-        _self.setScroll(_scroll, _contentHeight, _windowHeight);
-    }
-
-    _self.setData = function(data) {
+    self.setData = function(data) {
         _lanes = [];
         _levels = [];
+        _activities = [];
+        _events = [];
         var level = 0;
         data.lanes.forEach(function(lane) {
             var subLanes = []
@@ -119,24 +105,27 @@ function Flow(containerId) {
             });
             _lanes.push(subLanes);
         });
-        _activities = [];
-        _events = []
-        for (var i = data.activities.length - 1; i >= 0; i--) {
-            var activity = data.activities[i];
-            _activities[activity.id] = {id:activity.id, color:activity.color, events:[]};
-        };
-        data.events.sort(function (a,b){
-            return a.time - b.time}
-        );
+        data.activities.forEach(function(entry) {
+            _activities[entry.id] = {id:entry.id, color:entry.color, events:[]};
+        });
+        var indexedEvents = [];
+        var index = 0;
+        data.events.forEach(function (entry) {
+            indexedEvents[entry.id] = index;
+            index++;
+        });
+        data.events.sort(function (a, b) {
+            var delta = a.time - b.time;
+            if(!delta) delta = indexedEvents[a.id] - indexedEvents[b.id];
+            return delta;
+        });
         var slot = 0;
         var parent;
         data.events.forEach(function (entry) {
             switch(entry.type) {
                 case "branch":
-                    activity = _activities[entry.child];
-                    parent = entry.activity;
-                    break;
                 case "merge":
+                    activity.events.push({activity:entry.activity, id:entry.id, slot:slot, time:entry.time, lane:entry.lane, level:_levels[entry.lane], parent:undefined});
                     activity = _activities[entry.child];
                     parent = entry.activity;
                     break;
@@ -153,39 +142,41 @@ function Flow(containerId) {
         _min = Number.MAX_VALUE;
         _max = 0;
         _activities.forEach(function (activity) {
-            var  lastEvent;
+            var lastEvent;
             activity.events.forEach(function (event) {
-                if( lastEvent != undefined) {
+                if(lastEvent != undefined) {
                     var offset = event.time -  lastEvent.time;
                     _min = Math.min(_min, offset);
                     _max = Math.max(_max, offset);
                 }
                 lastEvent = event;
-            })
+            });
         });
-        
-        invalidate();
+        self.invalidate();
     }
 
-    _self.setHeight = function (height) {
-        _height = height;
-        invalidate();
-    }
-
-    function invalidate() {
-        resetInterval();
-        _interval = setInterval(_self.render, 40);
-    }
-
-    function resetInterval() {
-        if(_interval != undefined) {
-            clearInterval(_interval);
-        }
-        _interval = undefined;
+    self.render = function() {
+        _svg.clear();
+        _background = _svg.g();
+        var boundingBox = {x:0, y:0, width:0, height:0};
+        _lanes.forEach(function (entry) {
+            var lane = drawLane(entry.length, boundingBox.x + boundingBox.width, 0, _height);
+            _background.add(lane);
+            boundingBox = lane.getBBox()
+        });
+        _width = boundingBox.x + boundingBox.width + _laneWidth;
+        _container.setAttribute("width", _width + "px");
+        _flow = _svg.g();
+        _activities.forEach(function(entry) {
+            var activity = drawActivity(entry);
+            _flow.add(activity);
+        });
+        _connector = _svg.g();
+        self.setScroll(_scroll, _contentHeight, _windowHeight);
     }
 
     function drawLane(levels, x, y, height) {
-        lane = _svg.g();
+        var lane = _svg.g();
         var strokeWidth = 1;
         var width = levels * _laneWidth;
         var rect = _svg.rect(0, 0, width, height);
@@ -218,11 +209,11 @@ function Flow(containerId) {
 
     function drawActivity(data) {
         var positions = [];
-        var  lastEvent;
+        var lastEvent;
         var activity = _svg.g();
         data.events.forEach(function(event) {
             event.position = {x:_laneWidth * (event.level + 0.5),  y:event.slot * _slotHeight};
-            if( lastEvent != undefined) {
+            if(lastEvent != undefined) {
                 var commands = "M" +  lastEvent.position.x + " " +  lastEvent.position.y;
                 var jump = event.level -  lastEvent.level;
                 var curvePoints;
@@ -260,7 +251,7 @@ function Flow(containerId) {
                 activity.add(path);
                 commands = "M";
             }
-             lastEvent = event;
+            lastEvent = event;
         });
         data.events.forEach(function(event) {
             var selected = _selected != undefined && _selected.id == event.id;
@@ -271,7 +262,7 @@ function Flow(containerId) {
                 strokeWidth:_circleStroke,
                 cursor: "pointer"
             });
-            circle.eventId = event.id;
+            circle.node.setAttribute("eventId", event.id);
             circle.mouseover(circleMouseOverHandler);
             circle.mouseout(circleMouseOutHandler);
             circle.click(circleClickHandler);
@@ -293,27 +284,21 @@ function Flow(containerId) {
     }
 
     function circleMouseOverHandler(e) {
-        if(_selected == undefined || _selected.id != this.eventId) {
-            this.attr({
-                r:_circleRadius + _circleStroke
-            });
+        var id = event.target.getAttribute("eventId");
+        if(_selected == undefined || _selected.id != id) {
+            e.target.setAttribute("r", _circleRadius + _circleStroke);
         }
     }
 
     function circleMouseOutHandler(e) {
-        if(_selected == undefined || _selected.id != this.eventId) {
-            this.attr({
-                r:_circleRadius
-            });
+        var id = event.target.getAttribute("eventId");
+        if(_selected == undefined || _selected.id != id) {
+            e.target.setAttribute("r", _circleRadius);
         }
     }
 
     function circleClickHandler(e) {
-        _self.dispatchEvent(new Event(Event.SELECT, {id:this.eventId}));
+        var id = event.target.getAttribute("eventId");
+        self.dispatchEvent(new Event(Event.SELECT, {id:id}));
     }
-
-    invalidate();
 }
-
-Flow.extends(EventDispatcher);
-            

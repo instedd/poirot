@@ -1,56 +1,62 @@
-function EventDispatcher() {
+var EventDispatcher = (function () {
 
-	var _self = this;
-	var _listeners = [];
-
-	_self.addEventListener = function(type, listener) {
-		if(_listeners[type] == undefined) {
-			_listeners[type] = [];
+	function addEventListener (type, callback) {
+		if(this.listeners[type] == undefined) {
+			this.listeners[type] = [];
 		}
-		if(_listeners[type].indexOf(listener) == -1) {
-			_listeners[type].push(listener);
+		if(this.listeners[type].indexOf(callback) == -1) {
+			this.listeners[type].push(callback);
 		}
 	}
 
-	_self.removeEventListener = function(type, listener) {
-		if(_listeners[type] != undefined) {
-			var index = _listeners[type].indexOf(listener);
+	function removeEventListener(type, callback) {
+		if(this.listeners[type] != undefined) {
+			var index = this.listeners[type].indexOf(callback);
 			if (index != -1) {
-			    _listeners[type].splice(index, 1);
+			    this.listeners[type].splice(index, 1);
 			}
 		}
 	}
 
-	_self.willTrigger = function(type, listener) {
+	function willTrigger(type, callback) {
 		var willTrigger = false;
-		if(_listeners[type] != undefined) {
-			var index = _listeners[type].indexOf(listener);
-			willTrigger = index != -1;
+		if(this.listeners[type] != undefined) {
+			willTrigger = this.listeners[type].indexOf(callback) != -1;
 		}
 		return willTrigger;
 	}
 
-	_self.hasEventListener = function(type) {
+	function hasEventListener(type) {
 		var hasEventListener = false;
-		if(_listeners[type] != undefined) {
-			hasEventListener = _listeners[type].length > 0;
+		if(this.listeners[type] != undefined) {
+			hasEventListener = this.listeners[type].length > 0;
 		}
 		return hasEventListener;
 	}
 
-	_self.dispatchEvent = function(event) {
+	function dispatchEvent(event) {
 		event.target = this;
-		if(_listeners[event.type] != undefined) {
-			_listeners[event.type].forEach(function(entry) {
+		if(this.listeners[event.type] != undefined) {
+			this.listeners[event.type].forEach(function(entry) {
 				entry(event);
 			});
 		}
 	}
-}
+
+	return function() {
+		this.listeners = [];
+		this.addEventListener = addEventListener;
+		this.removeEventListener = removeEventListener;
+		this.willTrigger = willTrigger;
+		this.hasEventListener = hasEventListener;
+		this.dispatchEvent = dispatchEvent;
+		return this;
+	}
+})();
 
 function Event(type, info) {
 	this.type = type;
 	this.info = info;
-}
+};
 
 Event.SELECT = "select";

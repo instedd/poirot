@@ -11,7 +11,7 @@
     location.href = "/activities/#{id}"
 
   selectByIndex = (index) ->
-    if typeof(index) == 'string'
+    if typeof(index) == 'string' && index.length == 36
       $scope.openActivity index
 
     if currentSelection >= 0
@@ -26,7 +26,7 @@
       flow.setTargetAt(rowHeight * index + rowHeight/2)
     else
       currentSelection = -1
-    
+
     if currentSelection >= 0
       $scope.entries[currentSelection].selected = true
 
