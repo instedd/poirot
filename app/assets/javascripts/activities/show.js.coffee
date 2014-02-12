@@ -63,6 +63,13 @@
     nextLane = 1
     nextActivity = 1
 
+    parseTimestamp = (ts) ->
+      time = new Date(ts).getTime() * 1000
+      if ((useconds_match = ts.match(/\.\d{3}(\d*)/)) && useconds_match[1].length > 0)
+        time + parseInt(useconds_match[1]) * Math.pow(10, 3 - useconds_match[1].length)
+      else
+        time
+
     # build events vector for flow component while calculating necessary lanes
     events = for entry, i in entries
       do (entry) ->
@@ -80,7 +87,7 @@
           id
         {
           activity: aid
-          time: new Date(entry.timestamp).getTime()
+          time: parseTimestamp(entry.timestamp)
           id: i
           lane: secondary
           type: 'event'
@@ -104,7 +111,7 @@
       do (activity) ->
         paid = activity.parent_id
         if paid and acts[paid]
-          time = new Date(activity.start).getTime()
+          time = parseTimestamp(activity.start)
           bestLane = findBestLane(acts[paid], time)
 
           events.unshift
