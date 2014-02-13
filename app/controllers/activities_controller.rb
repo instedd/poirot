@@ -8,7 +8,7 @@ class ActivitiesController < ApplicationController
         begin
           result = Hercule::Activity.query(params[:q], from: from, size: page_size)
           render json: { result: 'ok', activities: result.items, total: result.total }.to_json
-        rescue => e
+        rescue Elasticsearch::Transport::Transport::Errors::BadRequest => e
           response = JSON.parse(e.message[6..-1])
           render json: { result: 'error', body: response['error'] }.to_json
         end
@@ -24,7 +24,7 @@ class ActivitiesController < ApplicationController
 
         if main
           data = [main]
-          
+
           children = [main]
           while not children.empty?
             ids = children.map(&:id)
