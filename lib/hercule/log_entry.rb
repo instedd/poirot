@@ -17,24 +17,28 @@ module Hercule
 
     def self.find_by_activity_id(id, options = {})
       query = base_query(options)
-      query[:filter][:and] << { term: { '@activity' => id } }
+      query[:filter] = { term: { '@activity' => id } }
 
-      response = Backend.search_all(query)
-      Result.new(response).items 
+      response = search(query)
+      response.items
     end
 
     def self.query(qs, options = {})
       query = base_query(options)
       query[:sort] = [ { '@timestamp' => { order: "desc" } } ]
-      query[:query] = { 
-        query_string: { 
-          default_field: '@message', 
-          default_operator: 'AND', 
-          query: qs 
+      query[:query] = {
+        query_string: {
+          default_field: '@message',
+          default_operator: 'AND',
+          query: qs
         }
       } unless qs.blank?
 
-      Result.new Backend.search_all(query)
+      search(query)
+    end
+
+    def self.search(q)
+      Result.new Backend.search_all q, type: 'logentry'
     end
 
     def self.base_query(options = {})
@@ -44,11 +48,6 @@ module Hercule
       query = {
         size: size,
         from: from,
-        filter: {
-          and: [
-            { term: { '_type' => 'logentry' } }
-          ]
-        }
       }
       query
     end

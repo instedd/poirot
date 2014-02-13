@@ -6,8 +6,10 @@ module Hercule
       @client ||= Elasticsearch::Client.new
     end
 
-    def self.search_all(body)
-      response = self.client.search index: all_indices, body: body
+    def self.search_all(body, options = {})
+      options[:index] ||= all_indices
+      options[:body] = body
+      response = self.client.search options
       puts "Query took #{response['took']} ms: #{body}"
       response
     end

@@ -47,47 +47,41 @@ module Hercule
       query = {
         size: size,
         from: from,
-        filter: {
-          and: [
-            { term: { '_type' => 'activity' } }
-          ]
-        }
       }
     end
 
     def self.find(id)
       query = base_query
-      query[:filter][:and] << { term: { '_id' => id } }
-      response = Backend.search_all query
+      query[:filter] = { term: { '_id' => id } }
+      response = search(query)
 
-      hit = response['hits']['hits'].first
-      if hit
-        new hit
-      else
-        nil
-      end
+      response.items.first
     end
 
     def self.find_by_parents(parent_ids)
       query = base_query
-      query[:filter][:and] << { terms: { '@parent' => parent_ids } }
-      response = Backend.search_all query
+      query[:filter] = { terms: { '@parent' => parent_ids } }
+      response = search(query)
       # FIXME: fetch the entries of all activities in one query
-      Result.new(response).items
+      response.items
     end
 
     def self.query(qs, options = {})
       query = base_query(options)
       query[:sort] = [ { '@start' => { order: 'desc' } } ]
-      query[:query] = { 
-        query_string: { 
-          default_field: '@description', 
+      query[:query] = {
+        query_string: {
+          default_field: '@description',
           default_operator: 'AND',
-          query: qs 
-        } 
+          query: qs
+        }
       } unless qs.blank?
 
-      Result.new Backend.search_all(query)
+      search(query)
+    end
+
+    def self.search(q)
+      Result.new Backend.search_all q, type: 'activity'
     end
 
     class Result
