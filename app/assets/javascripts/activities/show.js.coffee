@@ -1,5 +1,7 @@
 @app.controller 'ActivityController', ['$scope', ($scope) ->
-  ACTIVITY_COLORS = ['#0099cc', '#ff6600', '#9933cc', '#669900']
+  # ACTIVITY_COLORS = ['#0099cc', '#ff6600', '#9933cc', '#669900']
+  ACTIVITY_COLORS = ["#0099cc", "#9933cc", "#669900", "#ff8800", "#ff3300", "#ffcc00"]
+  # ACTIVITY_COLORS = ['#aee256','#68e256','#56e289','#56e2cf','#56aee2','#5668e2','#8a56e2','#cf56e2','#e256ae','#e25668','#e28956','#e2cf56']
 
   $scope.entries = []
   $scope.tooltip = message: '', visible: false, style: {}
@@ -56,84 +58,109 @@
   updateScroll = ->
     flow.setScroll viewport.scrollTop(), viewportContent.height(), viewport.height()
 
-  updateFlow = (entries, full_data) ->
-    lanes = {}
-    acts = {}
-    activities = []
-    nextLane = 1
-    nextActivity = 1
+  parseTimestamp = (ts) ->
+    time = new Date(ts).getTime() * 1000
+    if ((useconds_match = ts.match(/\.\d{3}(\d*)/)) && useconds_match[1].length > 0)
+      time + parseInt(useconds_match[1]) * Math.pow(10, 3 - useconds_match[1].length)
+    else
+      time
 
-    parseTimestamp = (ts) ->
-      time = new Date(ts).getTime() * 1000
-      if ((useconds_match = ts.match(/\.\d{3}(\d*)/)) && useconds_match[1].length > 0)
-        time + parseInt(useconds_match[1]) * Math.pow(10, 3 - useconds_match[1].length)
-      else
-        time
+  loadData = (data) ->
+    nextColor = 0
+    entries = []
+    activities = {}
 
-    # build events vector for flow component while calculating necessary lanes
-    events = for entry, i in entries
-      do (entry) ->
-        psel = entry.source
-        ssel = entry.pid + entry.activity
-        primary = (lanes[psel] = lanes[psel] or {})
-        secondary = (primary[ssel] = primary[ssel] or nextLane++)
-        aid = if acts[entry.activity]
-          acts[entry.activity]
-        else
-          id = nextActivity++
-          acts[entry.activity] = id
-          color = entry.activityColor
-          activities.push({id: id, color: color})
-          id
-        {
-          activity: aid
+    # consolidate event entries from all activities in data
+    for activity in data
+      activities[activity.id] = {id: activity.id}
+
+      entries.push
+        activity: activity.id
+        lane: 0
+        cssClass: "level-info"
+        id: "#{activity.id}-start"
+        time: parseTimestamp(activity.start)
+        timestamp: activity.start
+        source: activity.source
+        type: "start"
+        message: "Start activity: '#{activity.description}'"
+        entity: activity
+        fromActivity: activity.parent_id
+        sync: true
+      entries.push
+        activity: activity.id
+        lane: 0
+        cssClass: "level-info"
+        id: "#{activity.id}-end"
+        time: parseTimestamp(activity.stop)
+        timestamp: activity.stop
+        source: activity.source
+        type: "end"
+        message: "End activity: '#{activity.description}'"
+        entity: activity
+        toActivity: activity.parent_id
+      for entry in activity.entries
+        entries.push
+          lane: 0
+          cssClass: "level-#{entry.level}"
+          activity: activity.id
+          id: entry.id
           time: parseTimestamp(entry.timestamp)
-          id: i
-          lane: secondary
-          type: 'event'
-        }
+          type: "event"
+          message: entry.message
+          timestamp: entry.timestamp
+          source: entry.source
+          entity: entry
 
-    # finds the lane in which the given activity has the last event before given time
-    findBestLane = (aid, time) ->
-      best = 0
-      for event in events
-        do (event) ->
-          if event.activity == aid
-            if event.time <= time
-              best = event.lane
-            else if best == 0
-              best = event.lane
-      best
+    # sort by time
+    entries = entries.sort (a, b) -> a.time - b.time
 
-    # add events for forks
-    nextId = entries.length
-    for activity in full_data
-      do (activity) ->
-        paid = activity.parent_id
-        if paid and acts[paid]
-          time = parseTimestamp(activity.start)
-          bestLane = findBestLane(acts[paid], time)
+    lanes = {}
+    laneCount = 0
+    activityLanes = {}
 
-          events.unshift
-            activity: acts[paid]
-            time: time
-            id: activity.id
-            lane: bestLane
-            type: 'branch'
-            child: acts[activity.id]
+    for entry in entries
+      switch entry.type
+        when "start"
+          loop
+            color = ACTIVITY_COLORS[nextColor++ % ACTIVITY_COLORS.length]
+            break if entry.entity.parent_id == null || color != activities[entry.entity.parent_id].color
+          activities[entry.entity.id].color = color
+          sourceLanes = lanes[entry.source] ||= []
+          activityLane = null
+          for lane in sourceLanes
+            if !lane.inUse
+              activityLane = lane
+              break
+          unless activityLane
+            activityLane = (id: laneCount++)
+            sourceLanes.push activityLane
+          activityLane.inUse = true
+          activityLanes[entry.activity] = activityLane
+          entry.lane = activityLane.id
 
-    # build lanes vector for flow component
-    lanes = for source, pids of lanes
-      do (source, pids) ->
-        for pid, lane of pids
-          do (pid, lane) ->
-            lane
+        when "end"
+          activityLane = activityLanes[entry.activity]
+          entry.lane = activityLane.id
+          activityLane.inUse = false
+        else
+          activityLane = activityLanes[entry.activity]
+          entry.lane = activityLane.id
+      entry.activityColor = activities[entry.activity].color
 
-    data =
-      lanes: lanes,
-      activities: activities,
-      events: events
-    flow.setData(data)
+
+    console.log(entries)
+    $scope.entries = entries
+    $scope.mainActivity = data[0]
+    $scope.$apply()
+
+    flowData =
+      lanes: [[0, 1, 2, 3]]
+      activities: (a for _, a of activities)
+      events: entries
+    console.log(flowData)
+    flow.slotHeight(36);
+    flow.data(flowData)
 
     # adjust events grid left position for flow component width
     setTimeout(() ->
@@ -141,47 +168,17 @@
       $('.details').css(left: "#{width}px")
     , 50)
 
-  addCssClasses = (data) ->
-    for entry in data
-      do (entry) ->
-        entry.cssClass = "level-#{entry.level}"
-        entry
-
-  loadData = (data) ->
-    nextColor = 0
-    colorDict = {}
-    entries = []
-    # consolidate event entries from all activities in data
-    for activity in data
-      do (activity) ->
-        activityEntries = for entry in activity.entries
-          do (entry) ->
-            color = colorDict[activity.id] or \
-              (colorDict[activity.id] = ACTIVITY_COLORS[nextColor++ % ACTIVITY_COLORS.length])
-            entry.activity = activity.id
-            entry.activityColor = color
-            entry
-        entries = entries.concat(activityEntries)
-
-    # sort by timestamp
-    entries = entries.sort (a,b) ->
-      if a.timestamp > b.timestamp then 1 else -1
-
-    $scope.entries = addCssClasses(entries)
-    $scope.mainActivity = data[0]
-    $scope.$apply()
-    updateFlow(entries, data)
-
 
   # define and configure flow component
   flow = new Flow('flow-viewer')
   flow.addEventListener Event.SELECT, (evt) ->
+    flow.selectActivity(evt.info.activity)
     index = evt.info.id
     selectByIndex index
     $scope.$apply()
 
   viewport = $('.grid-viewport')
-  viewportContent = $('.log-entries')
+  viewportContent = $('.log-entries tbody')
 
   viewport.on 'scroll', updateScroll
   $(window).on 'resize', updateSize
