@@ -12,20 +12,35 @@
   $scope.openActivity = (id) ->
     location.href = "/activities/#{id}"
 
+  $scope.formatTimestamp = (ts) ->
+    date = new Date(ts)
+    h = date.getUTCHours()
+    m = date.getUTCMinutes()
+    s = date.getUTCSeconds()
+    ms = date.getUTCMilliseconds()
+
+    fill = (n) ->
+      if n <= 9 then '0' + n else n
+
+    "#{date.toDateString()}, #{h}:#{fill m}:#{fill s}.#{ms} UTC"
+
+  $scope.toggleMetadata = () ->
+    $scope.metadataVisible = !$scope.metadataVisible
+
   selectByIndex = (index) ->
     if typeof(index) == 'string' && index.length == 36
       $scope.openActivity index
 
     if currentSelection >= 0
       $scope.entries[currentSelection].selected = false
-      flow.selectById(currentSelection)
+      flow.selectEvent(currentSelection)
       flow.setTargetAt(undefined)
 
     if index < $scope.entries.length
-      rowHeight = $('.grid-viewport tbody tr:first-child').height()
+      rowHeight = $('.log-entries tbody tr:first-child').height()
       currentSelection = index
-      flow.selectById(index)
-      flow.setTargetAt(rowHeight * index + rowHeight/2)
+      flow.selectEvent($scope.entries[index].id)
+      flow.setTargetAt(rowHeight * index)
     else
       currentSelection = -1
 
@@ -50,10 +65,10 @@
     $scope.tooltip.visible = false
 
   updateSize = ->
-    height = $('.explorer').height()
+    height = $('.log-entries').height()
     flowSVG.attr('height', "#{height}px")
     flow.setHeight(height)
-    updateScroll()
+    # updateScroll()
 
   updateScroll = ->
     flow.setScroll viewport.scrollTop(), viewportContent.height(), viewport.height()
@@ -72,7 +87,7 @@
 
     # consolidate event entries from all activities in data
     for activity in data
-      activities[activity.id] = {id: activity.id}
+      activities[activity.id] = {id: activity.id, entity:activity}
 
       entries.push
         activity: activity.id
@@ -85,7 +100,6 @@
         type: "start"
         message: "Start activity: '#{activity.description}'"
         entity: activity
-        fromActivity: activity.parent_id
         sync: true
       entries.push
         activity: activity.id
@@ -98,7 +112,6 @@
         type: "end"
         message: "End activity: '#{activity.description}'"
         entity: activity
-        toActivity: activity.parent_id
       for entry in activity.entries
         entries.push
           lane: 0
@@ -109,6 +122,7 @@
           type: "event"
           message: entry.message
           timestamp: entry.timestamp
+          displayTimestamp: new Date(entry.timestamp)
           source: entry.source
           entity: entry
 
@@ -122,9 +136,10 @@
     for entry in entries
       switch entry.type
         when "start"
+          parentActivity = activities[entry.entity.parent_id]
           loop
             color = ACTIVITY_COLORS[nextColor++ % ACTIVITY_COLORS.length]
-            break if entry.entity.parent_id == null || color != activities[entry.entity.parent_id].color
+            break if parentActivity == undefined || color != parentActivity.color
           activities[entry.entity.id].color = color
           sourceLanes = lanes[entry.source] ||= []
           activityLane = null
@@ -138,11 +153,14 @@
           activityLane.inUse = true
           activityLanes[entry.activity] = activityLane
           entry.lane = activityLane.id
+          entry.fromActivity = parentActivity.id if parentActivity
 
         when "end"
           activityLane = activityLanes[entry.activity]
           entry.lane = activityLane.id
           activityLane.inUse = false
+          parentActivity = activities[entry.entity.parent_id]
+          entry.toActivity = parentActivity.id if parentActivity
         else
           activityLane = activityLanes[entry.activity]
           entry.lane = activityLane.id
@@ -151,7 +169,10 @@
 
     console.log(entries)
     $scope.entries = entries
+    $scope.activities = activities
     $scope.mainActivity = data[0]
+    $scope.metadataActivity = data[0]
+    $scope.metadataVisible = true
     $scope.$apply()
 
     flowData =
@@ -165,7 +186,9 @@
     # adjust events grid left position for flow component width
     setTimeout(() ->
       width = $('#flow-viewer').width()
-      $('.details').css(left: "#{width}px")
+      # $('.details').css(left: "#{width}px")
+      $('.flow').css(width: "#{width}px")
+      updateSize()
     , 50)
 
 
@@ -173,14 +196,15 @@
   flow = new Flow('flow-viewer')
   flow.addEventListener Event.SELECT, (evt) ->
     flow.selectActivity(evt.info.activity)
-    index = evt.info.id
+    index = evt.info.slot
     selectByIndex index
+    $scope.metadataActivity = $scope.activities[evt.info.activity].entity
     $scope.$apply()
 
   viewport = $('.grid-viewport')
   viewportContent = $('.log-entries tbody')
 
-  viewport.on 'scroll', updateScroll
+  # viewport.on 'scroll', updateScroll
   $(window).on 'resize', updateSize
 
   updateSize()
