@@ -6,7 +6,7 @@ require 'hercule/version'
 Gem::Specification.new do |gem|
   gem.name          = "hercule"
   gem.version       = Hercule::VERSION
-  gem.authors       = ["Gustavo Giráldez"]
+  gem.authors       = ["Gustavo Giraldez"]
   gem.email         = ["ggiraldez@manas.com.ar"]
   gem.description   = %q{}
   gem.summary       = %q{}
