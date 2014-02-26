@@ -33,6 +33,7 @@ gem 'd3-rails'
 gem 'haml-rails'
 gem 'angularjs-rails'
 gem 'bootstrap-sass-rails'
+gem 'rails_config'
 
 group :development, :test do
   gem 'pry-byebug'

@@ -6,6 +6,10 @@ module Hercule
       @client ||= Elasticsearch::Client.new
     end
 
+    def self.client=(client)
+      @client = client
+    end
+
     def self.search_all(body, options = {})
       options[:index] ||= all_indices
       options[:body] = body
