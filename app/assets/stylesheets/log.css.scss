@@ -82,7 +82,17 @@ table.log-entries {
     bottom: 0;
     overflow: auto;
     padding: 0 5px;
+  }
 
+  .notify-link {
+    display: inline-block;
+    width: 100px;
+    padding-left: 10px;
+    font-size: 13px;
+  }
+
+  .error {
+    color: red;
   }
 }
 

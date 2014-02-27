@@ -1,0 +1,19 @@
+!!!
+%html
+  %head
+    %title Poirot
+    = stylesheet_link_tag    "application", media: "all", "data-turbolinks-track" => true
+    = javascript_include_tag "application", "data-turbolinks-track" => true
+    = csrf_meta_tags
+    :javascript
+      var controller = "#{params[:controller]}";
+      var action = "#{params[:action]}";
+  %body
+    %nav.navbar.navbar-default.navbar-fixed-top{role: "navigation"}
+      %a.navbar-brand{href: "/"}= image_tag 'logo.png', alt: "Poirot", title: "Poirot"
+      %ul.nav.navbar-nav
+        %li= link_to 'Log Entries', log_entries_path
+        %li= link_to 'Activities', activities_path
+        %li= link_to 'Notifications', notifications_path
+    .container
+      = yield

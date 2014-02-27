@@ -1,9 +1,11 @@
 %div.log-index(ng-app="poirot" ng-controller="LogEntriesController")
   .grid-header
     %div.input-group(ng-class="{'has-error': queryError}")
-      %input.form-control(ng-model="queryString" ng-keypress="queryKeyPress($event)")
+      %input.form-control(ng-model="queryString" ng-keyup="queryKeyPress($event)")
       %span.input-group-btn
         %button.btn.btn-default(ng-click="runQuery()") Query
+        %span.notify-link
+          %a(ng-show="lastQuery" data-toggle="modal" data-target="#save-notification-modal" href="#") Notify me
 
     %table.table.table-stripped.table-hover.log-entries-header
       %colgroup
@@ -48,3 +50,28 @@
       %li.next
         %a(href="#" ng-click="nextPage()") Newer &rarr;
 
+  #save-notification-modal.modal.fade(ng-controller="SaveNotificationController")
+    .modal-dialog
+      .modal-content
+        .modal-header
+          %button.close(type="button" class="close" data-dismiss="modal") ×
+          %h3 Notify me
+        .modal-body
+          %div
+            Receive notifications in your email when new log entries match this query:
+          %div
+            %kbd
+              {{lastQuery}}
+          %br
+          %form(ng-submit="save()" role="form")
+            .form-group
+              %label(for="email") Email
+              %input.form-control(ng-model="email" type="text" id="email")
+            .form-group
+              %label(for="subject") Subject
+              %input.form-control(ng-model="subject" type="text" id="subject")
+            .error(ng-show="error") {{error}}
+
+        .modal-footer
+          %button.btn.btn-default(type="button" data-dismiss="modal") Close
+          %button.btn.btn-primary(type="button" ng-click="save()") {{saveMessage}}

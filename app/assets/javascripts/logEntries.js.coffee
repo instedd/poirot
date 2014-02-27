@@ -4,6 +4,7 @@
   $scope.page = 1
   $scope.pageSize = 20
   $scope.tooltip = message: '', visible: false, style: {}
+  $scope.lastQuery = null
 
   table = $('.log-entries')
   viewport = $('.grid-viewport')
@@ -45,11 +46,14 @@
 
   $scope.runQuery = () ->
     $scope.page = 1
+    $scope.lastQuery = $scope.queryString
     query()
 
   $scope.queryKeyPress = (evt) ->
     if evt.keyCode == 13
       $scope.runQuery()
+    else
+      $scope.lastQuery = null
 
   addCssClasses = (data) ->
     addCssEntry(entry) for entry in data
