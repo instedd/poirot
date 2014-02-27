@@ -32,7 +32,7 @@ gem 'hercule', path: '.'
 gem 'd3-rails'
 gem 'haml-rails'
 gem 'angularjs-rails'
-gem 'bootstrap-sass-rails'
+gem 'bootstrap-sass', '~> 3.1.1'
 gem 'rails_config'
 
 group :development, :test do

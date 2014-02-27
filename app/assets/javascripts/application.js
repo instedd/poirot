@@ -13,6 +13,7 @@
 //= require jquery
 //= require jquery_ujs
 //= require angular
+//= require bootstrap
 //= require 'app'
 //= require 'snap.svg-min'
 //= require 'inheritance'

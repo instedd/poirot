@@ -34,9 +34,8 @@ GEM
     angularjs-rails (1.2.5)
     arel (4.0.1)
     atomic (1.1.14)
-    bootstrap-sass-rails (3.0.3.0)
-      railties (>= 3.1.0)
-      sass-rails (>= 3.1.0)
+    bootstrap-sass (3.1.1.0)
+      sass (~> 3.2)
     builder (3.1.4)
     byebug (2.5.0)
       columnize (~> 0.3.6)
@@ -172,7 +171,7 @@ PLATFORMS
 
 DEPENDENCIES
   angularjs-rails
-  bootstrap-sass-rails
+  bootstrap-sass (~> 3.1.1)
   capistrano (~> 2.0)
   coffee-rails (~> 4.0.0)
   d3-rails
