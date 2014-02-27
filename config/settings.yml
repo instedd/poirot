@@ -1,2 +1,5 @@
 elasticsearch:
   url: localhost:9200
+mailer:
+  default_from: from@example.com
+  host: http://localhost:3000

@@ -1,0 +1,8 @@
+New activities matched the following query:
+
+<%= @notification.query %>
+
+They are:
+<% @activities.each do |activity| %>
+  - <%= activity_url(id: activity, host: Settings.mailer.host) %>
+<% end %>

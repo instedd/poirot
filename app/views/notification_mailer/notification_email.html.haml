@@ -1,0 +1,9 @@
+!!!
+%html
+  %body
+    %div New activities matched the following query:
+    %pre #{@notification.query}
+    %div They are
+    %ul
+      - @activities.each do |activity|
+        %li= link_to activity[0..8], activity_url(id: activity, host: Settings.mailer.host)
