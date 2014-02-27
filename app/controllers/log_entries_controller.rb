@@ -1,4 +1,4 @@
-class LogController < ApplicationController
+class LogEntriesController < ApplicationController
   def index
     respond_to do |format|
       format.html

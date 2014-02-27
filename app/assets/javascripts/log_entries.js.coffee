@@ -1,4 +1,4 @@
-@app.controller 'LogController', ['$scope', ($scope) ->
+@app.controller 'LogEntriesController', ['$scope', ($scope) ->
   $scope.entries = []
   $scope.totalEntries = 0
   $scope.page = 1
@@ -24,7 +24,7 @@
 
   query = () ->
     queryData = { q: $scope.queryString, from: ($scope.page - 1) * $scope.pageSize }
-    $.getJSON '/log', queryData, (data) ->
+    $.getJSON '/log_entries', queryData, (data) ->
       if data.result == 'error'
         $scope.entries = []
         $scope.totalEntries = 0

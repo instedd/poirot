@@ -4,6 +4,6 @@ Poirot::Application.routes.draw do
   resources :activities do
   end
 
-  resources :log do
+  resources :log_entries do
   end
 end

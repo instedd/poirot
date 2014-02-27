@@ -1,4 +1,4 @@
-%div.log-index(ng-app="poirot" ng-controller="LogController")
+%div.log-index(ng-app="poirot" ng-controller="LogEntriesController")
   .grid-header
     %div.input-group(ng-class="{'has-error': queryError}")
       %input.form-control(ng-model="queryString" ng-keypress="queryKeyPress($event)")
