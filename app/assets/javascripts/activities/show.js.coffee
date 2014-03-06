@@ -100,18 +100,19 @@
         type: "start"
         message: "Start activity: '#{activity.description}'"
         entity: activity
-        sync: true
-      entries.push
-        activity: activity.id
-        lane: 0
-        cssClass: "level-info"
-        id: "#{activity.id}-end"
-        time: parseTimestamp(activity.stop)
-        timestamp: activity.stop
-        source: activity.source
-        type: "end"
-        message: "End activity: '#{activity.description}'"
-        entity: activity
+        sync: !activity.async
+      if activity.stop
+        entries.push
+          activity: activity.id
+          lane: 0
+          cssClass: "level-info"
+          id: "#{activity.id}-end"
+          time: parseTimestamp(activity.stop)
+          timestamp: activity.stop
+          source: activity.source
+          type: "end"
+          message: "End activity: '#{activity.description}'"
+          entity: activity
       for entry in activity.entries
         entries.push
           lane: 0
@@ -160,7 +161,7 @@
           entry.lane = activityLane.id
           activityLane.inUse = false
           parentActivity = activities[entry.entity.parent_id]
-          entry.toActivity = parentActivity.id if parentActivity
+          entry.toActivity = parentActivity.id if parentActivity && entry.entity.async == false
         else
           activityLane = activityLanes[entry.activity]
           entry.lane = activityLane.id

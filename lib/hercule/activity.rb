@@ -1,6 +1,6 @@
 module Hercule
   class Activity
-    attr_reader :id, :start, :stop, :parent_id, :source, :pid, :fields, :description
+    attr_reader :id, :start, :stop, :parent_id, :source, :pid, :fields, :description, :async
 
     def initialize(hit, entries = nil)
       @id = hit['_id']
@@ -14,6 +14,7 @@ module Hercule
       @pid = source['@pid']
       @fields = source['@fields']
       @description = source['@description']
+      @async = source['@async']
 
       @entries = entries
     end
