@@ -177,7 +177,7 @@
     $scope.$apply()
 
     flowData =
-      lanes: [[0, 1, 2, 3]]
+      lanes: [[0 .. laneCount - 1]]
       activities: (a for _, a of activities)
       events: entries
     console.log(flowData)
