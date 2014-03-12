@@ -12,6 +12,9 @@
   $scope.openActivity = (id) ->
     location.href = "/activities/#{id}"
 
+  $scope.typeof = (obj) ->
+    typeof(obj)
+
   $scope.formatTimestamp = (ts) ->
     date = new Date(ts)
     h = date.getUTCHours()

@@ -7,12 +7,17 @@
       {{mainActivity.id}}
     %span.activity-title
       {{mainActivity.description || "(no description)"}}
+  %script#metadata-item(type="text/ng-template")
+    .metadata-item(ng-repeat="(key, value) in fields")
+      .metadata-key {{key}}
+      .metadata-value(ng-switch on="typeof(value)")
+        %span(ng-switch-when="object")
+          %ng-include(src="'metadata-item'" ng-repeat="fields in [value]")
+        %span(ng-switch-default) {{value}}
 
   %section.metadata-visible(ng-class="{'metadata-visible' : metadataVisible}")
     .metadata-view
-      .metadata-item(ng-repeat="(key, value) in metadataActivity.fields")
-        .metadata-key {{key}}
-        .metadata-value {{value}}
+      %ng-include(src="'metadata-item'" ng-repeat="fields in [metadataActivity.fields]")
 
     .details
       %table.heading.table
