@@ -15,16 +15,16 @@ module Hercule
       @message = source['@message']
     end
 
-    def self.find_by_activity_id(id, options = {})
-      query = base_query(options)
+    def self.find_by_activity_id(id, base_query = {})
+      query = base_query
       query[:filter] = { term: { '@activity' => id } }
 
       response = search(query)
       response.items
     end
 
-    def self.query(qs, options = {})
-      query = base_query(options)
+    def self.query(qs, base_query = {})
+      query = base_query
       query[:sort] = [ { '@timestamp' => { order: "desc" } } ]
       query[:query] = {
         query_string: {
@@ -38,18 +38,7 @@ module Hercule
     end
 
     def self.search(q)
-      Result.new Backend.search_all q, type: 'logentry'
-    end
-
-    def self.base_query(options = {})
-      size = options[:size] || 1000
-      from = options[:from] || 0
-
-      query = {
-        size: size,
-        from: from,
-      }
-      query
+      Result.new Backend.search q, type: 'logentry'
     end
 
     class Result

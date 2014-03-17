@@ -41,34 +41,19 @@ module Hercule
       super
     end
 
-    def self.base_query(options = {})
-      size = options[:size] || 1000
-      from = options[:from] || 0
-
-      query = {
-        size: size,
-        from: from,
-      }
-    end
-
     def self.find(id)
-      query = base_query
-      query[:filter] = { term: { '_id' => id } }
-      response = search(query)
-
+      response = search(filter: { term: { '_id' => id } })
       response.items.first
     end
 
     def self.find_by_parents(parent_ids)
-      query = base_query
-      query[:filter] = { terms: { '@parent' => parent_ids } }
-      response = search(query)
+      response = search(filter: { terms: { '@parent' => parent_ids } })
       # FIXME: fetch the entries of all activities in one query
       response.items
     end
 
-    def self.query(qs, options = {})
-      query = base_query(options)
+    def self.query(qs, base_query = {})
+      query = base_query
       query[:sort] = [ { '@start' => { order: 'desc' } } ]
       query[:query] = {
         query_string: {
@@ -82,7 +67,7 @@ module Hercule
     end
 
     def self.search(q)
-      Result.new Backend.search_all q, type: 'activity'
+      Result.new Backend.search q, type: 'activity'
     end
 
     class Result

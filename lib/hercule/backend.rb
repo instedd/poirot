@@ -10,7 +10,9 @@ module Hercule
       @client = client
     end
 
-    def self.search_all(body, options = {})
+    def self.search(body, options = {})
+      body[:from] ||= 0
+      body[:size] ||= 1000
       options[:index] ||= all_indices
       options[:body] = body
       response = self.client.search options
