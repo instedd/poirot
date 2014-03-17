@@ -85,10 +85,6 @@ col.pid {
       cursor: pointer;
     }
 
-    .activity-title {
-      margin-left: 10px;
-    }
-
     .activity-fields {
       color: #888;
       font-size: 80%;
@@ -153,15 +149,20 @@ col.pid {
 
   .metadata-view {
     width: 400px;
-    padding-top: 50px;
     opacity: 0;
     // transition: opacity 0.5s;
 
+    .title {
+      padding: 8px;
+      height: 36px;
+      font-weight: bold;
+    }
+
     .metadata-item {
-      margin-bottom: 8px;
       margin-left: 20px;
 
       .metadata-key {
+        margin-top: 8px;
         font-weight: bold;
       }
     }
