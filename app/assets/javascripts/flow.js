@@ -1,5 +1,5 @@
-function Flow(containerId) {
-
+ function Flow(containerId) {
+    
     EventDispatcher.call(this);
     InvalidateElement.call(this);
 
@@ -20,7 +20,7 @@ function Flow(containerId) {
     var _events = [];
     var _scroll = 0;
     var _contentHeight = 0;
-    var _windowHeight = 0;
+    var _windowHeight = 0;  
     var _flow;
     var _selection;
     var _lines;
@@ -99,17 +99,16 @@ function Flow(containerId) {
     }
 
     self.selectEvent = function(id) {
-        if(_event != undefined && _event.id == id) {
+        if(id == undefined) {
             _event = undefined;
-            self.invalidate();
-            return;
+        } else {
+            _event = getEventById(id);
         }
-        _event = getEventById(id);
         self.invalidate();
     }
 
     self.selectActivity = function(id) {
-        if(_activity != undefined && _activity.id == id) {
+        if(id == undefined) {
             _activity = undefined;
         } else {
             _activity = _activities[id];
@@ -211,6 +210,16 @@ function Flow(containerId) {
         for(var id in _activities) {
             drawActivity(_activities[id]);
         };
+        if(_event) {
+            var selection = _svg.circle(_event.position.x, _event.position.y, _laneWidth / 2 - _circleStroke - 1);
+            selection.attr({
+                fill:"none",
+                stroke: _activities[_event.activity].color,
+                strokeWidth: _circleStroke,
+                pointerEvents:"none"
+            });
+            _selection.add(selection);
+        }
         self.setScroll(_scroll, _contentHeight, _windowHeight);
     }
 
@@ -238,7 +247,7 @@ function Flow(containerId) {
     }
 
     function drawLane(levels, x, y) {
-        var height = (_timeSlots.length + 1) * _slotHeight;
+        var height = _height;
         var lane = _svg.g();
         var strokeWidth = 1;
         var width = levels * _laneWidth;
@@ -269,12 +278,11 @@ function Flow(containerId) {
                 for (var index = previous.slot; index < current.slot; index++) {
                     strokeWidth = _circleRadius * 2;
                     level = current.position.x;
-                    commands  = "M" +  level + " " + (_slotHeight * index) + "L" + level + " " + (_slotHeight * (index + 1));
+                    commands  = "M" +  level + " " + (_slotHeight * index) + "L" + level + " " + (_slotHeight * (index + 1));                        
                     path = _svg.path(commands);
                     path.attr({
                         fill:"none",
                         stroke:color,
-                        strokeLinecap:"round",
                         strokeWidth: strokeWidth,
                         pointerEvents:"none"
                     });
@@ -306,6 +314,15 @@ function Flow(containerId) {
                     innerCircle = _svg.circle(target.x, target.y, _circleStroke);
                     innerCircle.attr({
                         fill:color,
+                        pointerEvents:"none"
+                    });
+                    _dots.add(innerCircle);
+                } else if (!current.sync) {
+                    innerCircle = _svg.circle(target.x, target.y - _circleStroke, _circleStroke);
+                    innerCircle.attr({
+                       fill:"none",
+                        stroke:color,
+                        strokeWidth: strokeWidth,
                         pointerEvents:"none"
                     });
                     _dots.add(innerCircle);
@@ -371,18 +388,8 @@ function Flow(containerId) {
             }
             previous = current;
         });
-        if(_event) {
-            var selection = _svg.circle(_event.position.x, _event.position.y, _laneWidth / 2 - _circleStroke - 1);
-            selection.attr({
-                fill:"none",
-                stroke: "#cccccc",
-                strokeWidth: _circleStroke,
-                pointerEvents:"none"
-            });
-            _selection.add(selection);
-        }
         data.events.forEach(function(event) {
-            var circle;
+            var circle, innerCircle, arrow;
             switch(event.type) {
                 case "start":
                     circle = _svg.circle(event.position.x, event.position.y, _circleRadius + _circleStroke);
@@ -427,6 +434,27 @@ function Flow(containerId) {
             circle.click(circleClickHandler);
             event.display = circle;
         });
+        var lastEvent = data.events[data.events.length - 1];
+        if(lastEvent.type != "end" && lastEvent.toActivity == undefined && lastEvent.toNode == undefined) {
+            var end = {x:lastEvent.position.x, y:_height - (_height % _slotHeight) - _slotHeight - _circleRadius};
+            commands  = "M" +  lastEvent.position.x + " " + lastEvent.position.y + "L" + end.x + " " + end.y;   
+            path = _svg.path(commands);
+            path.attr({
+                fill:"none",
+                stroke:color,
+                strokeWidth: _circleRadius * 2,
+                pointerEvents:"none"
+            });
+            _lines.add(path);
+            arrow = _svg.polyline(end.x, end.y, end.x + _circleRadius, end.y, end.x, end.y + _circleRadius * 2, end.x - _circleRadius, end.y, end.x, end.y);
+            arrow.attr({
+                fill:color,
+                stroke:color,
+                strokeWidth:_circleStroke * 2,
+            });
+            _dots.add(arrow);            
+        }
+
     }
 
     function bind(previous, current) {

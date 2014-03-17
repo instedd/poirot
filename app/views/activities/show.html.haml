@@ -54,4 +54,8 @@
                     %td(class="level-icon {{entry.cssClass}}" ng-mouseenter="showTooltip(entry, $event)" ng-mouseout="hideTooltip()")
                       {{entry.message}}
                     %td {{formatTimestamp(entry.timestamp)}}
-
+                  %tr(ng-if="incompleteActivities")
+                    %td(class="gutter")<
+                      %span.gutter<
+                    %td(align="center" colspan="2")
+                      %i To be continued...

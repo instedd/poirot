@@ -87,6 +87,7 @@
     nextColor = 0
     entries = []
     activities = {}
+    incomplete = false
 
     # consolidate event entries from all activities in data
     for activity in data
@@ -116,6 +117,8 @@
           type: "end"
           message: "End activity: '#{activity.description}'"
           entity: activity
+      else
+        incomplete = true
       for entry in activity.entries
         entries.push
           lane: 0
@@ -177,6 +180,7 @@
     $scope.mainActivity = data[0]
     $scope.metadataActivity = data[0]
     $scope.metadataVisible = true
+    $scope.incompleteActivities = incomplete
     $scope.$apply()
 
     flowData =
