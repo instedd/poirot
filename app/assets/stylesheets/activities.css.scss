@@ -31,9 +31,9 @@ col.pid {
 }
 
 .level-icon {
-  padding-left: 30px !important;
+  padding-left: 34px !important;
   background-repeat: no-repeat;
-  background-position: 4px 8px;
+  background-position: 4px 5px;
 
   &.level-debug {
     background-image: asset-url("debug.png");
@@ -53,15 +53,6 @@ col.pid {
   &.level-fatal, &.level-critical {
     background-image: asset-url("fatal.png");
   }
-}
-
-.sprite {
-  display: inline-block;
-  background: asset-url('sprite.png') no-repeat;
-  width: 24px; height: 24px;
-
-  &.metadata { background-position: -48px -0px; }
-  &.metadata-active { background-position: -24px -48px; }
 }
 
 .activity {
@@ -106,10 +97,17 @@ col.pid {
 
     .activity-button {
       cursor: pointer;
+      display: inline-block;
+      background-image: asset-url("metadata.png");
+      width: 24px; height: 24px;
       -webkit-user-select: none;
       -moz-user-select: none;
       -khtml-user-select: none;
       -ms-user-select: none;
+
+      &:hover {
+        background-image: asset-url("metadata_active.png");
+      }
     }
   }
 

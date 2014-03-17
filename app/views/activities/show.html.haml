@@ -1,7 +1,7 @@
 %div.activity(ng-app="poirot" ng-controller="ActivityController")
   %header
     %a.parent(ng-if="mainActivity.parent_id && mainActivity.parent_id != 'undefined'" ng-click="openActivity(mainActivity.parent_id)")
-    %a.activity-button.sprite.metadata(ng-click="toggleMetadata()")
+    %a.activity-button(ng-click="toggleMetadata()")
     %b
       Activity
       {{mainActivity.id}}
