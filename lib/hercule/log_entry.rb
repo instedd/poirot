@@ -1,6 +1,6 @@
 module Hercule
   class LogEntry
-    attr_reader :id, :timestamp, :activity, :pid, :level, :source, :message
+    attr_reader :id, :timestamp, :activity, :pid, :level, :source, :message, :fields
 
     def initialize(hit)
       @id = hit['_id']
@@ -13,6 +13,7 @@ module Hercule
       @level = source['@level']
       @source = source['@source']
       @message = source['@message']
+      @fields = source['@fields']
     end
 
     def self.find_by_activity_id(id, base_query = {})
