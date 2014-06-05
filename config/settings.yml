@@ -1,3 +1,4 @@
+protocol: http
 elasticsearch:
   url: localhost:9200
 mailer:
