@@ -3,3 +3,5 @@ elasticsearch:
 mailer:
   default_from: from@example.com
   host: http://localhost:3000
+  delivery_method: sendmail
+
