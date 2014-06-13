@@ -44,11 +44,11 @@
   %div.row.pager-footer(ng-if="shouldPage()")
     %ul.pager
       %li.previous
-        %a(href="#" ng-click="prevPage()") &larr; Older
+        %a(href="#" ng-click="prevPage()") &larr; Newer
       %li
         {{fromEntry()}}-{{toEntry()}} of {{totalEntries}} entries
       %li.next
-        %a(href="#" ng-click="nextPage()") Newer &rarr;
+        %a(href="#" ng-click="nextPage()") Older &rarr;
 
   #save-notification-modal.modal.fade(ng-controller="SaveNotificationController")
     .modal-dialog

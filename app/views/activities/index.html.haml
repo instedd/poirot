@@ -35,9 +35,9 @@
   %div.row.pager-footer(ng-if="shouldPage()")
     %ul.pager
       %li.previous
-        %a(href="#" ng-click="prevPage()") &larr; Older
+        %a(href="#" ng-click="prevPage()") &larr; Newer
       %li
         {{fromActivity()}}-{{toActivity()}} of {{totalCount}} activities
       %li.next
-        %a(href="#" ng-click="nextPage()") Newer &rarr;
+        %a(href="#" ng-click="nextPage()") Older &rarr;
 

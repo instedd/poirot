@@ -6,6 +6,14 @@
 
   table = $('.activities')
 
+  saveState = ->
+    if window.sessionStorage
+      window.sessionStorage.activitiesQuery = $scope.queryString
+
+  loadState = ->
+    if window.sessionStorage
+      $scope.queryString = window.sessionStorage.activitiesQuery
+
   query = () ->
     queryData = { q: $scope.queryString, from: ($scope.page - 1) * $scope.pageSize }
     $.getJSON '/activities', queryData, (data) ->
@@ -32,6 +40,7 @@
   finishQuery = ->
     $scope.$apply()
     updatePager()
+    saveState()
 
   $scope.runQuery = () ->
     $scope.page = 1
@@ -70,6 +79,7 @@
 
   $(window).scroll updatePager
 
+  loadState()
   query()
 ]
 

@@ -9,6 +9,14 @@
   table = $('.log-entries')
   viewport = $('.grid-viewport')
 
+  saveState = ->
+    if window.sessionStorage
+      window.sessionStorage.entriesQuery = $scope.queryString
+
+  loadState = ->
+    if window.sessionStorage
+      $scope.queryString = window.sessionStorage.entriesQuery
+
   $scope.showTooltip = (entry, event) ->
     cell = $(event.target)
     if event.target.scrollWidth > cell.outerWidth()
@@ -43,6 +51,7 @@
   finishQuery = ->
     $scope.$apply()
     updatePager()
+    saveState()
 
   $scope.runQuery = () ->
     $scope.page = 1
@@ -95,6 +104,7 @@
 
   viewport.on 'scroll', updatePager
 
+  loadState()
   query()
 ]
 
