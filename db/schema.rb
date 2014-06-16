@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140221204652) do
+ActiveRecord::Schema.define(version: 20140616203905) do
 
   create_table "notifications", force: true do |t|
     t.string   "email"
@@ -21,5 +21,7 @@ ActiveRecord::Schema.define(version: 20140221204652) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  add_index "notifications", ["email", "query"], name: "index_notifications_on_email_and_query", unique: true, using: :btree
 
 end

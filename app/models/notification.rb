@@ -1,5 +1,8 @@
 class Notification < ActiveRecord::Base
   before_create :set_last_run_at_to_now
+
+  validates :query, uniqueness: { scope: :email, message: " already exists for the selected email"}
+
   def set_last_run_at_to_now
     self.last_run_at = Time.now
   end
