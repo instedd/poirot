@@ -15,7 +15,7 @@
 
   loadState = ->
     if window.sessionStorage
-      $scope.queryString = window.sessionStorage.entriesQuery
+      $scope.queryString = window.sessionStorage.entriesQuery || ''
 
   $scope.showTooltip = (entry, event) ->
     cell = $(event.target)

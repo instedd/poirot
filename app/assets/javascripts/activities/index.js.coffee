@@ -12,7 +12,7 @@
 
   loadState = ->
     if window.sessionStorage
-      $scope.queryString = window.sessionStorage.activitiesQuery
+      $scope.queryString = window.sessionStorage.activitiesQuery || ''
 
   query = () ->
     queryData = { q: $scope.queryString, from: ($scope.page - 1) * $scope.pageSize }
