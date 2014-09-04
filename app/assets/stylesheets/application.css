@@ -19,6 +19,10 @@ body, * {
   font-family: Open Sans;
 }
 
+body {
+  padding-top: 50px;
+}
+
 .container {
   margin-top: 60px;
 }

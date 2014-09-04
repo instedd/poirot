@@ -1,36 +1,46 @@
+%br
 %div(ng-app="poirot" ng-controller="ActivityIndexController")
-  %div.row
-    %div.col-md-12
-      %div.input-group(ng-class="{'has-error': queryError}")
+  .row{style: "margin-left: 20px; margin-right: 20px;"}
+    .col-md-8
+      .input-group(ng-class="{'has-error': queryError}")
         %input.form-control(ng-model="queryString" ng-keypress="queryKeyPress($event)")
         %span.input-group-btn
           %button.btn.btn-default(ng-click="runQuery()") Query
 
-    %table.table.table-stripped.table-hover.activities
-      %colgroup
-        %col.short-id
-        %col.short-id
-        %col
-        %col.timestamp
-        %col.timestamp
-        %col.source
-      %thead
-        %tr
-          %th Activity
-          %th Parent
-          %th Description
-          %th Start
-          %th End
-          %th Source
-      %tbody
-        %tr(ng-repeat="activity in activities" ng-click="open(activity.id)")
-          %td.clickable(title="{{activity.id}}") {{activity.id | limitTo: 8}}
-          %td(title="{{activity.parent_id}}" ng-click="open(activity.parent_id, $event)" ng-class="{'clickable': activity.parent_id}")
-            {{activity.parent_id | limitTo: 8}}
-          %td.description {{activity.description}}
-          %td {{activity.start}}
-          %td {{activity.stop}}
-          %td {{activity.source}}
+      %table.table.table-stripped.table-hover.activities
+        %colgroup
+          %col.short-id
+          %col.short-id
+          %col
+          %col.timestamp
+          %col.timestamp
+          %col.source
+        %thead
+          %tr
+            %th Activity
+            %th Parent
+            %th Description
+            %th Start
+            %th End
+            %th Source
+        %tbody
+          %tr(ng-repeat="activity in activities" ng-click="open(activity.id)")
+            %td.clickable(title="{{activity.id}}") {{activity.id | limitTo: 8}}
+            %td(title="{{activity.parent_id}}" ng-click="open(activity.parent_id, $event)" ng-class="{'clickable': activity.parent_id}")
+              {{activity.parent_id | limitTo: 8}}
+            %td.description {{activity.description}}
+            %td {{activity.start}}
+            %td {{activity.stop}}
+            %td {{activity.source}}
+    .col-md-4
+      Show events since:
+      .btn-group
+        %button.btn.btn-default.dropdown-toggle(type="button" data-toggle="dropdown")
+          {{ selectedIntervalName() }}
+          %span.caret
+        %ul.dropdown-menu(role="menu")
+          %li(ng-repeat="interval in intervals()")
+            %a(href="#" ng-click="selectInterval($index)") {{ interval.name }}
 
   %div.row.pager-footer(ng-if="shouldPage()")
     %ul.pager

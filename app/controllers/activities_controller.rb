@@ -5,8 +5,15 @@ class ActivitiesController < ApplicationController
       format.json {
         from = params[:from] || 0
         page_size = 20
+        filter = {}
+
+        if params[:since].present?
+          start_date = Time.now.utc - params[:since].to_i.hours
+          filter = {range: {"@start" => {gte: start_date.iso8601}}}
+        end
+
         begin
-          result = Hercule::Activity.query(params[:q], from: from, size: page_size)
+          result = Hercule::Activity.query(params[:q], from: from, size: page_size, filter: filter)
           render json: { result: 'ok', activities: result.items, total: result.total }.to_json
         rescue Elasticsearch::Transport::Transport::Errors::BadRequest => e
           response = JSON.parse(e.message[6..-1])
