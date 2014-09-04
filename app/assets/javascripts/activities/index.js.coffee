@@ -21,10 +21,12 @@
   saveState = ->
     if window.sessionStorage
       window.sessionStorage.activitiesQuery = $scope.queryString
+      window.sessionStorage.selectedInterval = $scope.selectedInterval
 
   loadState = ->
     if window.sessionStorage
       $scope.queryString = window.sessionStorage.activitiesQuery || ''
+      $scope.selectedInterval = window.sessionStorage.selectedInterval || 1
 
   query = () ->
     queryData = { q: $scope.queryString, from: ($scope.page - 1) * $scope.pageSize, since: TIME_INTERVALS[$scope.selectedInterval].hours }
