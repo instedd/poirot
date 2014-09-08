@@ -10,7 +10,7 @@ Gem::Specification.new do |gem|
   gem.email         = ["ggiraldez@manas.com.ar"]
   gem.description   = %q{}
   gem.summary       = %q{}
-  gem.homepage      = "https://bitbucket.org/instedd/hercule"
+  gem.homepage      = "https://github.com/instedd/poirot"
 
   gem.add_dependency 'elasticsearch'
 

@@ -5,7 +5,7 @@ set :rvm_ruby_string, '2.0.0'
 set :rvm_type, :system
 
 set :application, "poirot"
-set :repository,  "https://bitbucket.org/instedd/poirot.git"
+set :repository,  "https://github.com/instedd/poirot.git"
 set :scm, :git
 
 # role :web, "your web-server here"                          # Your HTTP server, Apache/etc
