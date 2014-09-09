@@ -34,7 +34,63 @@
         <h1>
 <a name="poirot" class="anchor" href="#poirot"><span class="octicon octicon-link"></span></a>Poirot</h1>
 
-<p>Poirot is a set of tools for log collection and analysis developed by InSTEDD.</p>
+<p>Poirot is a set of tools and libraries for log collection and analysis developed by InSTEDD. Poirot includes <em>loggers</em> for multiple platforms, which post log entries to a <em>log receiver</em> that indexes them in an <a href="http://www.elasticsearch.org/">ElasticSearch</a> backend, which can then be queried and navigated in a <em>web frontend</em>.</p>
+
+<h2>
+<a name="activities" class="anchor" href="#activities"><span class="octicon octicon-link"></span></a>Activities</h2>
+
+<p>Poirot log entries can be grouped in <em>activities</em>. An activity is a set of log entries grouped by a certain criteria, such as being related to the same task or to the same web request. Activities can be hierarchical, and Poirot tracks the spawning of different activities across different threads, processes or even applications. This can be used for linking a background process activity with the web request that triggered it, or for complex interactions between processes in Erlang OTP applications.</p>
+
+<h2>
+<a name="metadata" class="anchor" href="#metadata"><span class="octicon octicon-link"></span></a>Metadata</h2>
+
+<p>Both log entries and activities can be enriched with arbitrary metadata. For example, a web request can be indexed with all the query parameters sent by the client, allowing for easy lookup of a request based on any of its parameters; or a modification to a sensitive resource in the application can be logged with detailed information on the user who altered it, thus using Poirot as an audit trail as well. Poirot indexes all metadata by default, and relies con the power of ElasticSearch queries to provide easy search functionality.</p>
+
+<h2>
+<a name="storage" class="anchor" href="#storage"><span class="octicon octicon-link"></span></a>Storage</h2>
+
+<p>All data is stored in ElasticSearch indices. Poirot automatically creates one index per day, allowing for easy rotation of indices by making use of <a href="http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/modules-snapshots.html">ElasticSearch snapshots</a>. Each log entry is indexed with common fields such as <code>@message</code>, <code>@pid</code>, <code>@level</code>, <code>@source</code>, <code>@timestamp</code> and <code>@activity</code>; while applications keep track of a <code>@description</code>, <code>@pid</code>, <code>@source</code>, <code>@start</code> and <code>@end</code>, as well as any other metadata set by the client applications.</p>
+
+<hr><h1>
+<a name="libraries" class="anchor" href="#libraries"><span class="octicon octicon-link"></span></a>Libraries</h1>
+
+<p>Poirot libraries provide loggers or visualisation tools, currently for Rails and Erlang applications.</p>
+
+<h2>
+<a name="rails" class="anchor" href="#rails"><span class="octicon octicon-link"></span></a>Rails</h2>
+
+<p><a href="https://github.com/instedd/poirot_rails/">Poirot Rails</a> is a gem that configures an additional logger that pushes log entries via <a href="http://zeromq.org/">ZeroMQ</a> to a target receiver for indexing, which can be easily configured. The ZMQ protocol is very lightweight, and though it cannot guarantee delivery of all log entries to the receiver, it introduces hardly any performance penalty to the overall application.</p>
+
+<p>This gem also provides useful methods for managing activities and manually adding metadata, and injects Rack middleware to automatically wrap all web requests in an activity. If you are using BERT for communicating your Rails app with an Erlang application, this library also includes a <code>PoirotRails::BertService</code> wrapper to the BERT service that automatically links activities spawned in Erlang processes with the Rails action that triggered them.</p>
+
+<h2>
+<a name="erlang" class="anchor" href="#erlang"><span class="octicon octicon-link"></span></a>Erlang</h2>
+
+<p><a href="https://github.com/instedd/poirot_erlang">Poirot Elang</a> doubles as a logger and a receiver. This means that it can be used within a larger Erlang application as an additional <a href="https://github.com/basho/lager">lager</a> logger to push log entries to a Poirot receiver, or as a standalone process that receives log entries from Poirot Rails or Erlang loggers via ZeroMQ and indexes them in ElasticSearch.</p>
+
+<p>It can also be configured to act as both a logger and a receiver within the same application, in which case log entries are pushed to the receiver Erlang process as standard Erlang messages, and not via ZMQ.</p>
+
+<p>As in the Poirot Rails library, the Erlang library also provides methods for easily spawning new activities and enriching them with arbitrary metadata.</p>
+
+<h2>
+<a name="go-receiver" class="anchor" href="#go-receiver"><span class="octicon octicon-link"></span></a>Go Receiver</h2>
+
+<p><a href="https://bitbucket.org/instedd/poirot_receiver">Poirot Receiver</a>, written in Go, is a version of the receiver that listens for log entries pushed via ZMQ and indexes them in ElasticSearch. It has been deprecated in favour of the Poirot Erlang receiver.</p>
+
+<h2>
+<a name="frontend" class="anchor" href="#frontend"><span class="octicon octicon-link"></span></a>Frontend</h2>
+
+<p><a href="https://github.com/instedd/poirot">Poirot web frontend</a> is a Rails application that provides easy querying of both log entries and activities, and a detailed visualisation of all the entries involved in an activity, as well as the interaction between the processes across which the activity was spanned.</p>
+
+<h3>
+<a name="hercule" class="anchor" href="#hercule"><span class="octicon octicon-link"></span></a>Hercule</h3>
+
+<p><a href="https://bitbucket.org/instedd/hercule">Hercule</a> is a gem that provides models for log entries and activities, as well as useful methods for querying them over the ElasticSearch backend. It is used in the Poirot web frontend, but it can also be included in any Rails app that intends to provide a custom visualisation of the indexed Poirot information.</p>
+
+<hr><h1>
+<a name="deployment" class="anchor" href="#deployment"><span class="octicon octicon-link"></span></a>Deployment</h1>
+
+<p><a href="https://github.com/instedd-cookbooks/poirot">Poirot cookbook</a> is a <a href="http://www.getchef.com/chef/">Chef</a> cookbook that includes recipes for deploying both the Erlang Receiver as a standalone application and the web frontend as a regular Rails app behind an Apache web server.</p>
       </section>
     </div>
 
