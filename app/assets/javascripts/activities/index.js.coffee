@@ -1,4 +1,4 @@
-@app.controller 'ActivityIndexController', ['$scope', ($scope) ->
+@app.controller 'ActivityIndexController', ['$scope', '$http', ($scope, $http) ->
   $scope.activities = []
   $scope.totalCount = 0
   $scope.page = 1
@@ -17,6 +17,16 @@
   ]
 
   table = $('.activities')
+
+  $scope.attributes = [
+    {name: "@source", filterAttr: "@source", displayName: "Source"},
+    {name: "@fields.method.raw", filterAttr: "method", displayName: "Method"},
+    {name: "@fields.controller.raw", filterAttr: "controller", displayName: "Controller"},
+    {name: "@fields.path.raw", filterAttr: "path", displayName: "Path"}
+  ]
+
+  $scope.selectedAttr = null
+  $scope.selectedAttrValues = null
 
   saveState = ->
     if window.sessionStorage
@@ -61,10 +71,27 @@
     $scope.selectedInterval = i
     query()
 
+  $scope.selectAttribute = (attr) ->
+    $scope.selectedAttrValues = null
+    if $scope.selectedAttr == attr
+      $scope.selectedAttr = null
+    else
+      $scope.selectedAttr = attr
+      loadAttributeValues(attr)
+
+  $scope.addFilter = (attr, value) ->
+    $scope.queryString += " #{attr.filterAttr}:#{value}"
+    query()
+
   finishQuery = ->
     $scope.$apply()
     updatePager()
     saveState()
+
+  loadAttributeValues = (attr) ->
+    $http.get("/activities/attributes/#{attr.name}/values?q=#{escape($scope.queryString)}").
+      success (data) ->
+        $scope.selectedAttrValues = data
 
   $scope.runQuery = () ->
     $scope.page = 1

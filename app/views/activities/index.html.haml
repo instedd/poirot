@@ -42,6 +42,22 @@
           %li(ng-repeat="interval in intervals()")
             %a(href="#" ng-click="selectInterval($index)") {{ interval.name }}
 
+      %h4 Fields
+      %ul
+        %li(ng-repeat="attr in attributes")
+          %a(href="#" ng-click="selectAttribute(attr)") {{ attr.displayName }}
+          %table.table(ng-if="selectedAttrValues && selectedAttr == attr")
+            %thead
+              %tr
+                %th Value
+                %th Count
+            %tbody
+              %tr(ng-repeat="attrValue in selectedAttrValues")
+                %td
+                  %span.glyphicon.glyphicon-search.attr-filter(ng-click="addFilter(attr, attrValue.key)")
+                  {{ attrValue.key }}
+                %td {{ attrValue.doc_count }}
+
   %div.row.pager-footer(ng-if="shouldPage()")
     %ul.pager
       %li.previous

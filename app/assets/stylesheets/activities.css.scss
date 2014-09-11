@@ -267,3 +267,11 @@ table.activities {
   }
 }
 
+.attr-filter {
+  cursor: pointer;
+  color: lightgrey;
+
+  &:hover {
+    color: black;
+  }
+}
