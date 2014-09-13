@@ -1,0 +1,14 @@
+%table.table(ng-if="values")
+  %thead
+    %tr
+      %th Value
+      %th Count
+  %tbody
+    %tr(ng-repeat="value in values" ng-class="{active: isAttrValueSelected(value.key)}")
+      %td
+        %span.glyphicon.glyphicon-search.attr-filter(ng-click="addFilter(value.key)" ng-if="!isAttrValueSelected(value.key)")
+        %span.glyphicon.glyphicon-remove.attr-filter(ng-click="removeFilter(value.key)" ng-if="isAttrValueSelected(value.key)")
+        {{ value.key }}
+      %td {{ value.doc_count }}
+%h5(ng-if="values.length == 0")
+  No values

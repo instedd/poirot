@@ -1,9 +1,17 @@
 %br
 %div(ng-app="poirot" ng-controller="ActivityIndexController")
-  .row{style: "margin-left: 20px; margin-right: 20px;"}
+  %script{type: 'text/ng-template', id: 'attr_table.html'}
+    = render partial: 'attr_table'
+
+  .row
     .col-md-8
+      .attr-filters(style="margin-bottom: 8px" ng-if="filters.length > 0")
+        %span(ng-repeat="filter in filters")
+          %span.label.label-primary<
+            %span.glyphicon.glyphicon-remove(style="cursor: pointer;" ng-click="removeFilterAt($index)")<
+            {{ filter.attr.displayName }}: {{ filter.value }}
       .input-group(ng-class="{'has-error': queryError}")
-        %input.form-control(ng-model="queryString" ng-keypress="queryKeyPress($event)")
+        %input.form-control(ng-model="queryStringInput" ng-keypress="queryKeyPress($event)")
         %span.input-group-btn
           %button.btn.btn-default(ng-click="runQuery()") Query
 
@@ -46,17 +54,7 @@
       %ul
         %li(ng-repeat="attr in attributes")
           %a(href="#" ng-click="selectAttribute(attr)") {{ attr.displayName }}
-          %table.table(ng-if="selectedAttrValues && selectedAttr == attr")
-            %thead
-              %tr
-                %th Value
-                %th Count
-            %tbody
-              %tr(ng-repeat="attrValue in selectedAttrValues")
-                %td
-                  %span.glyphicon.glyphicon-search.attr-filter(ng-click="addFilter(attr, attrValue.key)")
-                  {{ attrValue.key }}
-                %td {{ attrValue.doc_count }}
+          %p-attr-table(ng-if="selectedAttr == attr" attribute="attr" query="queryString" filters="filters")
 
   %div.row.pager-footer(ng-if="shouldPage()")
     %ul.pager

@@ -4,6 +4,8 @@
   $scope.page = 1
   $scope.pageSize = 20
   $scope.selectedInterval = 1
+  $scope.filters = []
+
   TIME_INTERVALS = [
     {name:"1 hour", hours: 1},
     {name:"3 hours", hours: 3},
@@ -35,11 +37,15 @@
 
   loadState = ->
     if window.sessionStorage
-      $scope.queryString = window.sessionStorage.activitiesQuery || ''
+      $scope.queryString = $scope.queryStringInput = window.sessionStorage.activitiesQuery || ''
       $scope.selectedInterval = window.sessionStorage.selectedInterval || 1
 
   query = () ->
-    queryData = { q: $scope.queryString, from: ($scope.page - 1) * $scope.pageSize, since: TIME_INTERVALS[$scope.selectedInterval].hours }
+    qs = $scope.queryString
+    for filter in $scope.filters
+      qs += " #{filter.attr.name}:#{filter.value}"
+
+    queryData = { q: qs, from: ($scope.page - 1) * $scope.pageSize, since: TIME_INTERVALS[$scope.selectedInterval].hours }
     $.getJSON '/activities', queryData, (data) ->
       if data.result == 'error'
         $scope.activities = []
@@ -77,21 +83,11 @@
       $scope.selectedAttr = null
     else
       $scope.selectedAttr = attr
-      loadAttributeValues(attr)
-
-  $scope.addFilter = (attr, value) ->
-    $scope.queryString += " #{attr.filterAttr}:#{value}"
-    query()
 
   finishQuery = ->
     $scope.$apply()
     updatePager()
     saveState()
-
-  loadAttributeValues = (attr) ->
-    $http.get("/activities/attributes/#{attr.name}/values?q=#{escape($scope.queryString)}").
-      success (data) ->
-        $scope.selectedAttrValues = data
 
   $scope.runQuery = () ->
     $scope.page = 1
@@ -99,7 +95,12 @@
 
   $scope.queryKeyPress = (evt) ->
     if evt.keyCode == 13
-      $scope.runQuery()
+      $scope.queryString = $scope.queryStringInput
+
+  $scope.$watch '[queryString, filters]', $scope.runQuery, true
+
+  $scope.removeFilterAt = (index) ->
+    $scope.filters.splice(index, 1)
 
   $scope.nextPage = () ->
     if $scope.page * $scope.pageSize <= $scope.totalCount
@@ -131,6 +132,5 @@
   $(window).scroll updatePager
 
   loadState()
-  query()
 ]
 

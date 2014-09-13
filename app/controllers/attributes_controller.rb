@@ -22,7 +22,7 @@ class AttributesController < ApplicationController
       }
     end
 
-    result = Hercule::Backend.search(search)
+    result = Hercule::Backend.search(search, type: 'activity')
     render json: result['aggregations']['attr_values']['buckets']
   end
 end
