@@ -1,4 +1,4 @@
-@app.directive 'pAttrTable', ($http) ->
+@app.directive 'pAttrTable', ['$http', ($http) ->
   restrict: 'E'
   templateUrl: 'attr_table.html'
   scope:
@@ -40,3 +40,4 @@
 
     scope.isAttrValueSelected = (value) ->
       scope.currentFilter && scope.currentFilter.value == value
+]
