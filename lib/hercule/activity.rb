@@ -52,16 +52,20 @@ module Hercule
       response.items
     end
 
-    def self.query(qs, base_query = {})
-      query = base_query
-      query[:sort] = [ { '@start' => { order: 'desc' } } ]
-      query[:query] = {
+    def self.build_query(qs)
+      {
         query_string: {
-          default_field: '@description',
+          fields: ['@description^5', '_all'],
           default_operator: 'AND',
           query: qs
         }
-      } unless qs.blank?
+      }
+    end
+
+    def self.query(qs, base_query = {})
+      query = base_query
+      query[:sort] = [ { '@start' => { order: 'desc' } } ]
+      query[:query] = build_query(qs) unless qs.blank?
 
       search(query)
     end

@@ -13,13 +13,7 @@ class AttributesController < ApplicationController
     }
 
     if params[:q].present?
-      search[:query] = {
-        query_string: {
-          default_field: '@description',
-          default_operator: 'AND',
-          query: params[:q]
-        }
-      }
+      search[:query] = Hercule::Activity.build_query(params[:q])
     end
 
     result = Hercule::Backend.search(search, type: 'activity')
