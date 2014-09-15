@@ -53,6 +53,9 @@ col.pid {
   &.level-fatal, &.level-critical {
     background-image: asset-url("fatal.png");
   }
+  &.level-sql {
+    background-image: asset-url("gear.png")
+  }
 }
 
 .activity {

@@ -83,6 +83,12 @@
     else
       time
 
+  cssClassForEntry = (entry) ->
+    if entry.tags.indexOf("sql") >= 0
+      "level-sql"
+    else
+      "level-#{entry.level}"
+
   loadData = (data) ->
     nextColor = 0
     entries = []
@@ -122,7 +128,7 @@
       for entry in activity.entries
         entries.push
           lane: 0
-          cssClass: "level-#{entry.level}"
+          cssClass: cssClassForEntry(entry)
           activity: activity.id
           id: entry.id
           time: parseTimestamp(entry.timestamp)
