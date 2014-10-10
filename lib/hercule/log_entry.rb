@@ -17,6 +17,11 @@ module Hercule
       @tags = source['@tags']
     end
 
+    def self.find(id)
+      response = search(filter: { term: { '_id' => id } })
+      response.items.first
+    end
+
     def self.find_by_activity_id(id, base_query = {})
       query = base_query
       query[:filter] = { term: { '@activity' => id } }

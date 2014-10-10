@@ -1,0 +1,40 @@
+.activity, .logentry {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 50px;
+  overflow: hidden;
+
+  header {
+    position: absolute;
+    top: 0;
+    height: 40px;
+    left: 0;
+    right: 0;
+    background-color: #fdfdfd;
+    padding: 10px;
+    overflow: hidden;
+    * { vertical-align: middle; }
+
+    .parent {
+      float: left;
+      background-image: asset-url("parent.png");
+      background-repeat: no-repeat;
+      background-position: center center;
+      width: 20px;
+      height: 20px;
+      margin-right: 10px;
+      cursor: pointer;
+    }
+
+  }
+
+  section {
+    position: absolute;
+    left: 20px;
+    right: 20px;
+    bottom: 20px;
+    top: 40px;
+  }
+}

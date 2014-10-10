@@ -12,6 +12,9 @@
   $scope.openActivity = (id) ->
     location.href = "/activities/#{id}"
 
+  $scope.openLogEntry = (id) ->
+    location.href = "/log_entries/#{id}"
+
   $scope.typeof = (obj) ->
     typeof(obj)
 

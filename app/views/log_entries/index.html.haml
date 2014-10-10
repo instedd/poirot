@@ -34,7 +34,7 @@
         %col.source
       %tbody
         %tr(ng-repeat="entry in entries" class="{{entry.cssClass}}")
-          %td.message(class="level-icon {{entry.cssClass}}" ng-mouseenter="showTooltip(entry, $event)" ng-mouseout="hideTooltip()")
+          %td.message.clickable(class="level-icon {{entry.cssClass}}" ng-mouseenter="showTooltip(entry, $event)" ng-mouseout="hideTooltip()" ng-click="open(entry.id)")
             {{entry.message}}
           %td {{entry.timestamp}}
           %td(ng-class="{'clickable': entry.activity.toLowerCase() != 'undefined'}" ng-click="openActivity(entry)") {{entry.activity | limitTo: 8}}

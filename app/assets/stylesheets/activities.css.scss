@@ -59,34 +59,8 @@ col.pid {
 }
 
 .activity {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  top: 50px;
-  overflow: hidden;
 
   header {
-    position: absolute;
-    top: 0;
-    max-height: 40px;
-    left: 0;
-    right: 0;
-    background-color: #fdfdfd;
-    padding: 10px;
-    overflow: hidden;
-    * { vertical-align: middle; }
-
-    .parent {
-      float: left;
-      background-image: asset-url("parent.png");
-      background-repeat: no-repeat;
-      background-position: center center;
-      width: 20px;
-      height: 20px;
-      margin-right: 10px;
-      cursor: pointer;
-    }
 
     .activity-fields {
       color: #888;
@@ -108,14 +82,6 @@ col.pid {
         background-image: asset-url("metadata_active.png");
       }
     }
-  }
-
-  section {
-    position: absolute;
-    left: 20px;
-    right: 20px;
-    bottom: 20px;
-    top: 40px;
   }
 
   .details {
@@ -153,22 +119,6 @@ col.pid {
   .metadata-view {
     width: 400px;
     opacity: 0;
-    // transition: opacity 0.5s;
-
-    .title {
-      padding: 8px;
-      height: 36px;
-      font-weight: bold;
-    }
-
-    .metadata-item {
-      margin-left: 20px;
-
-      .metadata-key {
-        margin-top: 8px;
-        font-weight: bold;
-      }
-    }
   }
 
   .metadata-visible {
@@ -180,8 +130,6 @@ col.pid {
       opacity: 1;
     }
   }
-
-
 
   table.log-entries {
     table-layout: fixed;

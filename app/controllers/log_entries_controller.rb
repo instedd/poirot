@@ -1,4 +1,5 @@
 class LogEntriesController < ApplicationController
+
   def index
     respond_to do |format|
       format.html
@@ -15,5 +16,16 @@ class LogEntriesController < ApplicationController
       }
     end
   end
+
+  def show
+    respond_to do |format|
+      format.html
+      format.json {
+        main = Hercule::LogEntry.find(params[:id])
+        render json: main.as_json
+      }
+    end
+  end
+
 end
 
