@@ -96,6 +96,7 @@
     nextColor = 0
     entries = []
     activities = {}
+    links = {}
     incomplete = false
 
     # consolidate event entries from all activities in data
@@ -141,6 +142,8 @@
           displayTimestamp: new Date(entry.timestamp)
           source: entry.source
           entity: entry
+        if entry.fields && link_id = entry.fields["link_id"]
+          links[link_id] = entry.id
 
     # sort by time
     entries = entries.sort (a, b) -> a.time - b.time
@@ -160,7 +163,7 @@
           sourceLanes = lanes[entry.source] ||= []
           activityLane = null
           for lane in sourceLanes
-            if !lane.inUse
+            if !lane.inUse && lane != activityLanes[parentActivity.id]
               activityLane = lane
               break
           unless activityLane
@@ -169,7 +172,11 @@
           activityLane.inUse = true
           activityLanes[entry.activity] = activityLane
           entry.lane = activityLane.id
-          entry.fromActivity = parentActivity.id if parentActivity
+          if parentActivity
+            if entry.entity.fields && link_id = entry.entity.fields["link_id"]
+              entry.fromNode = links[link_id]
+            else
+              entry.fromActivity = parentActivity.id
 
         when "end"
           activityLane = activityLanes[entry.activity]
@@ -183,7 +190,6 @@
       entry.activityColor = activities[entry.activity].color
 
 
-    console.log(entries)
     $scope.entries = entries
     $scope.activities = activities
     $scope.mainActivity = data[0]
@@ -196,7 +202,6 @@
       lanes: [[0 .. laneCount - 1]]
       activities: (a for _, a of activities)
       events: entries
-    console.log(flowData)
     flow.slotHeight(36);
     flow.data(flowData)
 
