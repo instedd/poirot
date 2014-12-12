@@ -183,7 +183,7 @@
           entry.lane = activityLane.id
           activityLane.inUse = false
           parentActivity = activities[entry.entity.parent_id]
-          entry.toActivity = parentActivity.id if parentActivity && entry.entity.async == false
+          entry.toActivity = parentActivity.id if parentActivity && !entry.entity.async
         else
           activityLane = activityLanes[entry.activity]
           entry.lane = activityLane.id
