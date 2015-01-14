@@ -1,6 +1,7 @@
 module Hercule
   class Activity
     attr_reader :id, :start, :stop, :parent_id, :source, :pid, :fields, :description, :async
+    attr_accessor :level
 
     def initialize(hit, entries = nil)
       @id = hit['_id']
@@ -88,6 +89,42 @@ module Hercule
       def items
         @items ||= @response['hits']['hits'].map do |hit|
           Activity.new hit
+        end
+      end
+
+      def with_levels
+        levels_search = {
+          query: { terms: { '@activity' => items.map(&:id) } },
+          size: 0,
+          aggs: {
+            activities: {
+              terms: { field: '@activity', size: 0 },
+              aggs: {
+                levels: {
+                  terms: { field: '@level', size: 0 }
+                }
+              }
+            }
+          }
+        }
+
+        levels = Hercule::Backend.search(levels_search, type: 'logentry')
+        levels_by_activity = Hash[levels['aggregations']['activities']['buckets'].map do |a|
+          [a['key'], worst_level(a['levels']['buckets'].map { |l| l['key'] })]
+        end]
+
+        items.each do |activity|
+          activity.level = levels_by_activity[activity.id] || "info"
+        end
+
+        self
+      end
+
+      private
+
+      def worst_level(levels)
+        %w(fatal critical error warn warning notice info debug).each do |level|
+          return level if levels.include?(level)
         end
       end
     end

@@ -32,8 +32,8 @@
             %th End
             %th Source
         %tbody
-          %tr(ng-repeat="activity in activities" ng-click="open(activity.id)")
-            %td.clickable(title="{{activity.id}}") {{activity.id | limitTo: 8}}
+          %tr(ng-repeat="activity in activities" ng-click="open(activity.id)" class="level-{{activity.level}}")
+            %td.clickable(title="{{activity.id}}" class="level-icon level-{{activity.level}}") {{activity.id | limitTo: 8}}
             %td(title="{{activity.parent_id}}" ng-click="open(activity.parent_id, $event)" ng-class="{'clickable': activity.parent_id}")
               {{activity.parent_id | limitTo: 8}}
             %td.description {{activity.description}}

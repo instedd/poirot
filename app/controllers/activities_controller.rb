@@ -13,7 +13,7 @@ class ActivitiesController < ApplicationController
         end
 
         begin
-          result = Hercule::Activity.query(params[:q], from: from, size: page_size, filter: filter)
+          result = Hercule::Activity.query(params[:q], from: from, size: page_size, filter: filter).with_levels
           render json: { result: 'ok', activities: result.items, total: result.total }.to_json
         rescue Elasticsearch::Transport::Transport::Errors::BadRequest => e
           response = JSON.parse(e.message[6..-1])
