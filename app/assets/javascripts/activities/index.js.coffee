@@ -20,12 +20,9 @@
 
   table = $('.activities')
 
-  $scope.attributes = [
-    {name: "@source", filterAttr: "@source", displayName: "Source"},
-    {name: "@fields.method.raw", filterAttr: "method", displayName: "Method"},
-    {name: "@fields.controller.raw", filterAttr: "controller", displayName: "Controller"},
-    {name: "@fields.path.raw", filterAttr: "path", displayName: "Path"}
-  ]
+  $http.get("/activities/attributes").
+    success (data) ->
+      $scope.attributes = data
 
   $scope.selectedAttr = null
   $scope.selectedAttrValues = null
