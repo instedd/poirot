@@ -23,6 +23,7 @@
   $http.get("/activities/attributes").
     success (data) ->
       $scope.attributes = data
+      $scope.selectedAttr = data[0]
 
   $scope.selectedAttr = null
   $scope.selectedAttrValues = null
