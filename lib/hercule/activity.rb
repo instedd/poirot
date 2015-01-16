@@ -10,7 +10,7 @@ module Hercule
 
       @start = source['@start']
       @stop = source['@end']
-      @parent_id = source['@parent']
+      @parent_id = source['@parent'] || source['@from']
       @source = source['@source']
       @pid = source['@pid']
       @fields = source['@fields']
@@ -48,7 +48,10 @@ module Hercule
     end
 
     def self.find_by_parents(parent_ids)
-      response = search(filter: { terms: { '@parent' => parent_ids } })
+      response = search(filter: { or: [
+        { terms: { '@parent' => parent_ids } },
+        { terms: { '@from' => parent_ids } }
+      ]})
       # FIXME: fetch the entries of all activities in one query
       response.items
     end
