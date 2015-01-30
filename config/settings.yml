@@ -1,6 +1,6 @@
 protocol: http
 elasticsearch:
-  url: localhost:9200
+  url: <%= ENV['ELASTICSEARCH_URL'] || 'localhost:9200' %>
 mailer:
   default_from: from@example.com
   host: http://localhost:3000

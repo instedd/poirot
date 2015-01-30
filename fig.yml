@@ -1,0 +1,23 @@
+elasticsearch:
+  image: dockerfile/elasticsearch
+
+db:
+  image: mysql
+  environment:
+    MYSQL_ROOT_PASSWORD: root
+
+web:
+  build: .
+  links:
+    - elasticsearch
+    - db
+  environment:
+    RAILS_ENV: production
+    DATABASE_URL: mysql2://root:root@db/poirot
+    ELASTICSEARCH_URL: http://elasticsearch:9200/
+
+receiver:
+  command: "/bin/bash -c 'sleep 10 ; make run-prod'"
+  image: instedd/poirot-receiver
+  links:
+    - elasticsearch
