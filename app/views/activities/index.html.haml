@@ -37,8 +37,8 @@
             %td(title="{{activity.parent_id}}" ng-click="open(activity.parent_id, $event)" ng-class="{'clickable': activity.parent_id}")
               {{activity.parent_id | limitTo: 8}}
             %td.description {{activity.description}}
-            %td {{activity.start}}
-            %td {{activity.stop}}
+            %td {{formatTimestamp(activity.start)}}
+            %td {{formatTimestamp(activity.stop)}}
             %td {{activity.source}}
     .col-md-4
       Show events since:

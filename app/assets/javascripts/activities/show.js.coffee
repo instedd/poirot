@@ -18,18 +18,6 @@
   $scope.typeof = (obj) ->
     typeof(obj)
 
-  $scope.formatTimestamp = (ts) ->
-    date = new Date(ts)
-    h = date.getUTCHours()
-    m = date.getUTCMinutes()
-    s = date.getUTCSeconds()
-    ms = date.getUTCMilliseconds()
-
-    fill = (n) ->
-      if n <= 9 then '0' + n else n
-
-    "#{date.toDateString()}, #{h}:#{fill m}:#{fill s}.#{ms} UTC"
-
   $scope.toggleMetadata = () ->
     $scope.metadataVisible = !$scope.metadataVisible
 
@@ -144,7 +132,6 @@
           type: "event"
           message: entry.message
           timestamp: entry.timestamp
-          displayTimestamp: new Date(entry.timestamp)
           source: entry.source
           entity: entry
         if entry.fields && link_id = entry.fields["link_id"]

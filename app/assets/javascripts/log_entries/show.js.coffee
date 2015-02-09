@@ -24,24 +24,12 @@
     $scope.cssClass = "level-#{data.level.toLowerCase()}"
     $scope.metadata = $.extend data.fields,
       id: data.id
-      timestamp: formatTimestamp(data.timestamp)
+      timestamp: $scope.formatTimestamp(data.timestamp)
       pid: data.pid
       source: data.source
       tags: data.tags.join(', ') || 'none'
 
     $scope.$apply()
-
-  formatTimestamp = (ts) ->
-    date = new Date(ts)
-    h = date.getUTCHours()
-    m = date.getUTCMinutes()
-    s = date.getUTCSeconds()
-    ms = date.getUTCMilliseconds()
-
-    fill = (n) ->
-      if n <= 9 then '0' + n else n
-
-    "#{date.toDateString()}, #{h}:#{fill m}:#{fill s}.#{ms} UTC"
 
   # load initial set of data
   $.ajax
