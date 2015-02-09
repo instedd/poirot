@@ -102,13 +102,14 @@
     # consolidate event entries from all activities in data
     for activity in data
       activities[activity.id] = {id: activity.id, entity:activity}
+      activityStartTime = parseTimestamp(activity.start)
 
       entries.push
         activity: activity.id
         lane: 0
         cssClass: "level-info"
         id: "#{activity.id}-start"
-        time: parseTimestamp(activity.start)
+        time: activityStartTime
         timestamp: activity.start
         source: activity.source
         type: "start"
@@ -129,13 +130,17 @@
           entity: activity
       else
         incomplete = true
+
       for entry in activity.entries
+        entryTime = parseTimestamp(entry.timestamp)
+        if entryTime < activityStartTime
+          entryTime = activityStartTime
         entries.push
           lane: 0
           cssClass: cssClassForEntry(entry)
           activity: activity.id
           id: entry.id
-          time: parseTimestamp(entry.timestamp)
+          time: entryTime
           type: "event"
           message: entry.message
           timestamp: entry.timestamp
@@ -145,8 +150,14 @@
         if entry.fields && link_id = entry.fields["link_id"]
           links[link_id] = entry.id
 
+    stableSort = (array, sortFun) ->
+      array
+        .map((e, i) -> [i, e])
+        .sort((x, y) -> sortFun(x[1], y[1]) || (x[0] - y[0]))
+        .map((e) -> e[1])
+
     # sort by time
-    entries = entries.sort (a, b) -> a.time - b.time
+    entries = stableSort(entries, (a, b) -> a.time - b.time)
 
     lanes = {}
     laneCount = 0
