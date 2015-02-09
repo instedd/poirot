@@ -1,6 +1,6 @@
 @app = angular.module('poirot', [])
 
-@app.run ($rootScope) ->
+@app.run ['$rootScope', ($rootScope) ->
   $rootScope.formatTimestamp = (ts) ->
     date = new Date(ts)
     h = date.getUTCHours()
@@ -15,4 +15,4 @@
       str
 
     "#{date.toDateString()}, #{h}:#{pad m, 2}:#{pad s, 2}.#{pad ms, 3} UTC"
-
+]
