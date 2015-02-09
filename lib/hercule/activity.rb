@@ -1,7 +1,7 @@
 module Hercule
   class Activity
     attr_reader :id, :start, :stop, :parent_id, :source, :pid, :fields, :description, :async
-    attr_accessor :level
+    attr_accessor :level, :entries
 
     def initialize(hit, entries = nil)
       @id = hit['_id']
@@ -22,6 +22,13 @@ module Hercule
 
     def entries
       @entries ||= LogEntry.find_by_activity_id id
+    end
+
+    def self.bulk_load_entries(activities)
+      entries_by_activity = LogEntry.find_by_activity_id(activities.map(&:id)).group_by(&:activity)
+      activities.each do |activity|
+        activity.entries = entries_by_activity[activity.id] || []
+      end
     end
 
     def inspect

@@ -24,7 +24,11 @@ module Hercule
 
     def self.find_by_activity_id(id, base_query = {})
       query = base_query
-      query[:filter] = { term: { '@activity' => id } }
+      if id.is_a?(Array)
+        query[:filter] = { terms: { '@activity' => id } }
+      else
+        query[:filter] = { term: { '@activity' => id } }
+      end
 
       response = search(query)
       response.items

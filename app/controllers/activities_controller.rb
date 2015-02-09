@@ -41,6 +41,8 @@ class ActivitiesController < ApplicationController
         else
           data = []
         end
+
+        Hercule::Activity.bulk_load_entries(data)
         render json: data.as_json(with_entries: true)
       }
     end
