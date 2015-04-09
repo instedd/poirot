@@ -40,7 +40,6 @@ gem 'rails_config'
 group :development, :test do
   gem 'pry-byebug'
   gem 'capistrano', '~> 2.0'
-  gem 'rvm-capistrano'
 end
 
 group :doc do
