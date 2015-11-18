@@ -1,5 +1,5 @@
 elasticsearch:
-  image: dockerfile/elasticsearch
+  image: elasticsearch:1.7
 
 db:
   image: mysql
