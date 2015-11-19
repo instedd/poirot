@@ -27,7 +27,7 @@
       timestamp: $scope.formatTimestamp(data.timestamp)
       pid: data.pid
       source: data.source
-      tags: data.tags.join(', ') || 'none'
+      tags: (data.tags && data.tags.join(', ')) || 'none'
 
     $scope.$apply()
 
