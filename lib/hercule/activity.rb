@@ -1,10 +1,11 @@
 module Hercule
   class Activity
-    attr_reader :id, :start, :stop, :parent_id, :source, :pid, :fields, :description, :async
+    attr_reader :id, :start, :stop, :parent_id, :source, :pid, :fields, :description, :async, :index
     attr_accessor :level, :entries
 
     def initialize(hit, entries = nil)
       @id = hit['_id']
+      @index = hit['_index']
 
       source = hit['fields'] || hit['_source']
 
@@ -73,16 +74,17 @@ module Hercule
       }
     end
 
-    def self.query(qs, base_query = {})
+    def self.query(qs, base_query = {}, options = {})
       query = base_query
       query[:sort] = [ { '@start' => { order: 'desc' } } ]
       query[:query] = build_query(qs) unless qs.blank?
 
-      search(query)
+      search(query, options)
     end
 
-    def self.search(q)
-      Result.new Backend.search q, type: 'activity'
+    def self.search(q, options = {})
+      options[:type] = 'activity'
+      Result.new Backend.search q, options
     end
 
     class Result
@@ -118,7 +120,8 @@ module Hercule
           }
         }
 
-        levels = Hercule::Backend.search(levels_search, type: 'logentry')
+        indices = items.map(&:index).uniq.join(",")
+        levels = Hercule::Backend.search(levels_search, type: 'logentry', index: indices)
         levels_by_activity = Hash[levels['aggregations']['activities']['buckets'].map do |a|
           [a['key'], worst_level(a['levels']['buckets'].map { |l| l['key'] })]
         end]
