@@ -5,6 +5,7 @@
     attribute: '=attribute'
     query: '='
     filters: '='
+    since: '='
 
   link: (scope) ->
     for filter in scope.filters
@@ -15,14 +16,15 @@
     reload = () ->
       attr = scope.attribute
       qs = scope.query
+      since = scope.since
       for filter in scope.filters
         qs += " #{filter.attr.name}:#{filter.value}" unless filter.attr == attr
 
-      $http.get("/activities/attributes/#{attr.name}/values?q=#{escape(qs)}").
+      $http.get("/activities/attributes/#{attr.name}/values?q=#{escape(qs)}&since=#{since}").
         success (data) ->
           scope.values = data
 
-    scope.$watch '[query, filters]', reload, true
+    scope.$watch '[query, filters, since]', reload, true
 
     removeCurrentFilter = ->
       if scope.currentFilter

@@ -71,6 +71,9 @@
   $scope.selectedIntervalName = ->
     TIME_INTERVALS[$scope.selectedInterval].name
 
+  $scope.selectedIntervalValue = ->
+    TIME_INTERVALS[$scope.selectedInterval].hours
+
   $scope.selectInterval = (i) ->
     $scope.selectedInterval = i
     query()

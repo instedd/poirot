@@ -21,8 +21,12 @@ class AttributesController < ApplicationController
   end
 
   def values
+    start_date = Time.now.utc - params[:since].to_i.hours
     search = {
       size: 0,
+      query: {
+        range: { "@start" => { gte: start_date.iso8601 } }
+      },
       aggs: {
         attr_values: {
           terms: {
@@ -36,7 +40,7 @@ class AttributesController < ApplicationController
       search[:query] = Hercule::Activity.build_query(params[:q])
     end
 
-    result = Hercule::Backend.search(search, type: 'activity')
+    result = Hercule::Backend.search(search, type: 'activity', since: start_date)
     render json: result['aggregations']['attr_values']['buckets']
   end
 
