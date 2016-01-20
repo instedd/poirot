@@ -1,6 +1,8 @@
 class AttributesController < ApplicationController
   def index
-    mappings = Hercule::Backend.client.indices.get_mapping(index: 'poirot-*', type: 'activity')
+    mappings = Hercule::Backend.client.indices.get_mapping(
+      index: Hercule::Backend.indices_since(Time.now - 1.month),
+      type: 'activity', ignore_unavailable: true, allow_no_indices: true)
     attributes = {"@source" => {name: "@source", filterAttr: "@source", displayName: "Source"}}
 
     mappings.reverse_each do |index, mapping|
