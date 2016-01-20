@@ -9,9 +9,6 @@
   currentSelection = -1
   flowSVG = $('#flow-viewer')
 
-  $scope.openActivity = (id) ->
-    location.href = "/activities/#{id}"
-
   $scope.openLogEntry = (id) ->
     location.href = "/log_entries/#{id}"
 
@@ -22,9 +19,6 @@
     $scope.metadataVisible = !$scope.metadataVisible
 
   selectByIndex = (index) ->
-    if typeof(index) == 'string' && index.length == 36
-      $scope.openActivity index
-
     if currentSelection >= 0
       $scope.entries[currentSelection].selected = false
       flow.selectEvent(currentSelection)

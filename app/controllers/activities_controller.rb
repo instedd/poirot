@@ -29,7 +29,7 @@ class ActivitiesController < ApplicationController
     respond_to do |format|
       format.html
       format.json {
-        main = Hercule::Activity.find(params[:id])
+        main = Hercule::Activity.find(params[:date], params[:id])
 
         if main
           data = [main]
@@ -37,7 +37,7 @@ class ActivitiesController < ApplicationController
           children = [main]
           while not children.empty?
             ids = children.map(&:id)
-            children = Hercule::Activity.find_by_parents(ids)
+            children = Hercule::Activity.find_by_parents(params[:date], ids)
             data = data + children
           end
         else

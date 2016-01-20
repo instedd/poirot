@@ -22,11 +22,11 @@ module Hercule
     end
 
     def entries
-      @entries ||= LogEntry.find_by_activity_id id
+      @entries ||= LogEntry.find_by_activity(self)
     end
 
     def self.bulk_load_entries(activities)
-      entries_by_activity = LogEntry.find_by_activity_id(activities.map(&:id)).group_by(&:activity)
+      entries_by_activity = LogEntry.find_by_activity(activities).group_by(&:activity)
       activities.each do |activity|
         activity.entries = entries_by_activity[activity.id] || []
       end
@@ -50,17 +50,18 @@ module Hercule
       super
     end
 
-    def self.find(id)
-      response = search(filter: { term: { '_id' => id } })
-      response.items.first
+    def self.find(date, id)
+      index = Backend.index_by_date(date)
+      result = Hercule::Backend.client.get index: index, type: 'activity', id: id
+      Activity.new result
     end
 
-    def self.find_by_parents(parent_ids)
-      response = search(filter: { or: [
+    def self.find_by_parents(date, parent_ids)
+      index = Backend.index_by_date(date)
+      response = search({filter: { or: [
         { terms: { '@parent' => parent_ids } },
         { terms: { '@from' => parent_ids } }
-      ]})
-      # FIXME: fetch the entries of all activities in one query
+      ]}}, index: index)
       response.items
     end
 

@@ -59,12 +59,6 @@
 
       finishQuery()
 
-  $scope.open = (id, evt) ->
-    if id
-      location.href = "/activities/#{id}"
-    if evt
-      evt.stopPropagation()
-
   $scope.intervals = ->
     TIME_INTERVALS
 

@@ -6,8 +6,9 @@ Poirot::Application.routes.draw do
   end
   root 'pages#index'
 
-  resources :activities do
+  resources :activities, only: [:index] do
     collection do
+      get ':date/:id' => :show
       resources :attributes, constraints: { id: /[^\/]+/ } do
         member do
           get 'values'

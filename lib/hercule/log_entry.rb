@@ -22,15 +22,16 @@ module Hercule
       response.items.first
     end
 
-    def self.find_by_activity_id(id, base_query = {})
-      query = base_query
-      if id.is_a?(Array)
-        query[:filter] = { terms: { '@activity' => id } }
+    def self.find_by_activity(activities, query = {}, options = {})
+      activities = Array(activities)
+      options[:index] = activities.map(&:index).uniq.join(",")
+      if activities.length > 1
+        query[:filter] = { terms: { '@activity' => activities.map(&:id) } }
       else
-        query[:filter] = { term: { '@activity' => id } }
+        query[:filter] = { term: { '@activity' => activities.first.id } }
       end
 
-      response = search(query)
+      response = search(query, options)
       response.items
     end
 
@@ -48,8 +49,9 @@ module Hercule
       search(query)
     end
 
-    def self.search(q)
-      Result.new Backend.search q, type: 'logentry'
+    def self.search(q, options = {})
+      options[:type] = 'logentry'
+      Result.new Backend.search q, options
     end
 
     class Result

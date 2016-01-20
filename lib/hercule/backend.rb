@@ -31,11 +31,18 @@ module Hercule
       "poirot-*"
     end
 
+    def self.index_by_date(date)
+      if date.is_a?(String)
+        date = Time.parse(date)
+      end
+      date.strftime("poirot-%Y.%m.%d")
+    end
+
     def self.indices_since(since)
       now = Time.now.utc
       indices = []
       loop do
-        indices << since.strftime("poirot-%Y.%m.%d")
+        indices << index_by_date(since)
         since += 1.day
         break if since > now
       end
