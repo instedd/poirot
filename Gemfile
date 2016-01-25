@@ -11,6 +11,9 @@ gem 'jquery-rails'
 gem 'turbolinks'
 gem 'jbuilder', '~> 1.2'
 gem 'devise'
+gem 'alto_guisso', github: "instedd/alto_guisso", branch: 'master'
+gem 'alto_guisso_rails', github: "instedd/alto_guisso_rails", branch: 'master'
+
 
 gem 'hercule', path: '.'
 
