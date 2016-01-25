@@ -42,13 +42,16 @@
 
     "#{date.toDateString()}, #{h}:#{pad m, 2}:#{pad s, 2}.#{pad ms, 3} UTC"
 
-  buildActivityUrl = (activity, id) ->
-    start = new Date(activity.start)
+  buildActivityUrl = (date, id) ->
+    start = new Date(date)
     "/activities/#{start.toJSON().substring(0, 10)}/#{id}"
 
   $rootScope.activityUrl = (activity) ->
-    buildActivityUrl(activity, activity.id)
+    buildActivityUrl(activity.start, activity.id)
 
   $rootScope.parentActivityUrl = (activity) ->
-    buildActivityUrl(activity, activity.parent_id)
+    buildActivityUrl(activity.start, activity.parent_id)
+
+  $rootScope.logEntryActivityUrl = (logentry, activityId) ->
+    buildActivityUrl(logentry.timestamp, logentry.activity)
 ]
