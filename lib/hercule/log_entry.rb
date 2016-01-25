@@ -35,7 +35,7 @@ module Hercule
       response.items
     end
 
-    def self.query(qs, base_query = {})
+    def self.query(qs, base_query = {}, options = {})
       query = base_query
       query[:sort] = [ { '@timestamp' => { order: "desc" } } ]
       query[:query] = {
@@ -46,7 +46,7 @@ module Hercule
         }
       } unless qs.blank?
 
-      search(query)
+      search(query, options)
     end
 
     def self.search(q, options = {})

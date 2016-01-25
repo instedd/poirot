@@ -1,45 +1,65 @@
-%div.log-index(ng-app="poirot" ng-controller="LogEntriesController")
-  .grid-header
-    %div.input-group(ng-class="{'has-error': queryError}")
-      %input.form-control(ng-model="queryString" ng-keyup="queryKeyPress($event)")
-      %span.input-group-btn
-        %button.btn.btn-default(ng-click="runQuery()") Query
-        %span.notify-link
-          %a(ng-show="lastQuery" data-toggle="modal" data-target="#save-notification-modal" href="#") Notify me
+%br
+%div(ng-app="poirot" ng-controller="LogEntriesController")
+  %script{type: 'text/ng-template', id: 'attr_table.html'}
+    = render partial: 'shared/attr_table'
 
-    %table.table.table-stripped.table-hover.log-entries-header
-      %colgroup
-        %col
-        %col.timestamp
-        %col.short-id
-        %col.pid
-        %col.source
-      %thead
-        %tr
-          %th Message
-          %th Time
-          %th Activity
-          %th Pid
-          %th Source
+  .row
+    .col-md-8
+      .attr-filters(style="margin-bottom: 8px" ng-if="filters.length > 0")
+        %span(ng-repeat="filter in filters")
+          %span.label.label-primary<
+            %span.glyphicon.glyphicon-remove(style="cursor: pointer;" ng-click="removeFilterAt($index)")<
+            {{ filter.attr.displayName }}: {{ filter.value }}
+      .input-group(ng-class="{'has-error': queryError}")
+        %input.form-control(ng-model="queryStringInput" ng-keyup="queryKeyPress($event)")
+        %span.input-group-btn
+          %button.btn.btn-default(ng-click="runQuery()") Query
+          %span.notify-link
+            %a(ng-show="lastQuery" data-toggle="modal" data-target="#save-notification-modal" href="#") Notify me
 
-  .grid-viewport
-    .message-tooltip.level-icon(ng-show="tooltip.visible" ng-style="tooltip.style" class="{{tooltip.cssClass}}")
-      {{tooltip.message}}
-    %table.table.table-stripped.table-hover.log-entries
-      %colgroup
-        %col
-        %col.timestamp
-        %col.short-id
-        %col.pid
-        %col.source
-      %tbody
-        %tr(ng-repeat="entry in entries" class="{{entry.cssClass}}")
-          %td.message.clickable(class="level-icon {{entry.cssClass}}" ng-mouseenter="showTooltip(entry, $event)" ng-mouseout="hideTooltip()" ng-click="open(entry.id)")
-            {{entry.message}}
-          %td {{formatTimestamp(entry.timestamp)}}
-          %td(ng-class="{'clickable': entry.activity.toLowerCase() != 'undefined'}" ng-click="openActivity(entry)") {{entry.activity | limitTo: 8}}
-          %td {{entry.pid}}
-          %td {{entry.source}}
+      .message-tooltip.level-icon(ng-show="tooltip.visible" ng-style="tooltip.style" class="{{tooltip.cssClass}}")
+        {{tooltip.message}}
+
+      %table.table.table-stripped.table-hover.log-entries
+        %colgroup
+          %col
+          %col.timestamp
+          %col.short-id
+          %col.pid
+          %col.source
+        %thead
+          %tr
+            %th Message
+            %th Time
+            %th Activity
+            %th Pid
+            %th Source
+
+        %tbody
+          %tr(ng-repeat="entry in entries" class="{{entry.cssClass}}")
+            %td.message.clickable(class="level-icon {{entry.cssClass}}" ng-mouseenter="showTooltip(entry, $event)" ng-mouseout="hideTooltip()" ng-click="open(entry.id)")
+              {{entry.message}}
+            %td {{formatTimestamp(entry.timestamp)}}
+            %td(ng-class="{'clickable': entry.activity.toLowerCase() != 'undefined'}" ng-click="openActivity(entry)") {{entry.activity | limitTo: 8}}
+            %td {{entry.pid}}
+            %td {{entry.source}}
+
+    .col-md-4
+      Show events since:
+      .btn-group
+        %button.btn.btn-default.dropdown-toggle(type="button" data-toggle="dropdown")
+          {{ selectedIntervalName() }}
+          %span.caret
+        %ul.dropdown-menu(role="menu")
+          %li(ng-repeat="interval in intervals()")
+            %a(href="#" ng-click="selectInterval($index)") {{ interval.name }}
+
+      %h4 Fields
+      %ul
+        %li(ng-repeat="attr in attributes")
+          %a(href="#" ng-click="selectAttribute(attr)") {{ attr.displayName }}
+          %p-attr-table(ng-if="selectedAttr == attr" type="log_entries" attribute="attr" query="queryString" filters="filters" since="selectedIntervalValue()")
+
 
   %div.row.pager-footer(ng-if="shouldPage()")
     %ul.pager

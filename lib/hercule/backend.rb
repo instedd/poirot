@@ -23,7 +23,7 @@ module Hercule
       options[:index] ||= all_indices
       options[:body] = body
       response = self.client.search options
-      puts "Query took #{response['took']} ms: #{body}"
+      puts "Query took #{response['took']} ms: #{options}"
       response
     end
 

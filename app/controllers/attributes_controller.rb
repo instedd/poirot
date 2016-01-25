@@ -2,12 +2,20 @@ class AttributesController < ApplicationController
   def index
     mappings = Hercule::Backend.client.indices.get_mapping(
       index: Hercule::Backend.indices_since(Time.now - 1.month),
-      type: 'activity', ignore_unavailable: true, allow_no_indices: true)
+      type: params[:type], ignore_unavailable: true, allow_no_indices: true)
     attributes = {"@source" => {name: "@source", filterAttr: "@source", displayName: "Source"}}
+
+    if params[:type] == 'logentry'
+      attributes["@level"] = {
+        name: "@level",
+        filterAttr: "@level",
+        displayName: "Level"
+      }
+    end
 
     mappings.reverse_each do |index, mapping|
       begin
-        properties = mapping["mappings"]["activity"]["properties"]["@fields"]["properties"]
+        properties = mapping["mappings"][params[:type]]["properties"]["@fields"]["properties"]
         iterate_properties("@fields", "", properties) do |name, full_name, prop|
           next if name.include?("/") # HACK: nested properties will be enabled later
           full_name = full_name + ".raw" if prop["type"] == "string"
@@ -24,10 +32,11 @@ class AttributesController < ApplicationController
 
   def values
     start_date = Time.now.utc - params[:since].to_i.hours
+    ts_property = params[:type] == 'activity' ? "@start" : "@timestamp"
     search = {
       size: 0,
       query: {
-        range: { "@start" => { gte: start_date.iso8601 } }
+        range: { ts_property => { gte: start_date.iso8601 } }
       },
       aggs: {
         attr_values: {
@@ -42,18 +51,18 @@ class AttributesController < ApplicationController
       search[:query] = Hercule::Activity.build_query(params[:q])
     end
 
-    result = Hercule::Backend.search(search, type: 'activity', since: start_date)
+    result = Hercule::Backend.search(search, type: params[:type], since: start_date)
     render json: result['aggregations']['attr_values']['buckets']
   end
 
   def histogram
-    stats = Hercule::Backend.search({size: 0, aggs: {attr_stats: {stats: {field: params[:id]}}}}, type: 'activity')
+    stats = Hercule::Backend.search({size: 0, aggs: {attr_stats: {stats: {field: params[:id]}}}}, type: params[:type])
     min = stats['aggregations']['attr_stats']['min']
     max = stats['aggregations']['attr_stats']['max']
 
     interval = [((max - min) / 100).floor, 1].max
 
-    result = Hercule::Backend.search({size: 0, aggs: {histogram: {histogram: {field: params[:id], interval: interval}}}}, type: 'activity')
+    result = Hercule::Backend.search({size: 0, aggs: {histogram: {histogram: {field: params[:id], interval: interval}}}}, type: params[:type])
     render json: {min: min, max: max, interval: interval, histogram: result['aggregations']['histogram']['buckets']}
   end
 

@@ -6,6 +6,7 @@
     query: '='
     filters: '='
     since: '='
+    type: '@'
 
   link: (scope) ->
     for filter in scope.filters
@@ -20,7 +21,7 @@
       for filter in scope.filters
         qs += " #{filter.attr.name}:#{filter.value}" unless filter.attr == attr
 
-      $http.get("/activities/attributes/#{attr.name}/values?q=#{escape(qs)}&since=#{since}").
+      $http.get("/#{scope.type}/attributes/#{attr.name}/values?q=#{escape(qs)}&since=#{since}").
         success (data) ->
           scope.values = data
 

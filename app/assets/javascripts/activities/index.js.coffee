@@ -3,20 +3,7 @@
   $scope.totalCount = 0
   $scope.page = 1
   $scope.pageSize = 20
-  $scope.selectedInterval = 1
   $scope.filters = []
-
-  TIME_INTERVALS = [
-    {name:"1 hour", hours: 1},
-    {name:"3 hours", hours: 3},
-    {name:"6 hours", hours: 6},
-    {name:"12 hours", hours: 12},
-    {name:"1 day", hours: 24},
-    {name:"3 days", hours: 72},
-    {name:"1 week", hours: 168},
-    {name:"3 weeks", hours: 504},
-    {name:"ever", hours: null}
-  ]
 
   table = $('.activities')
 
@@ -43,7 +30,7 @@
     for filter in $scope.filters
       qs += " #{filter.attr.name}:#{filter.value}"
 
-    queryData = { q: qs, from: ($scope.page - 1) * $scope.pageSize, since: TIME_INTERVALS[$scope.selectedInterval].hours }
+    queryData = { q: qs, from: ($scope.page - 1) * $scope.pageSize, since: $scope.selectedIntervalValue() }
     $.getJSON '/activities', queryData, (data) ->
       if data.result == 'error'
         $scope.activities = []
@@ -58,19 +45,6 @@
         $scope.activities = data.activities
 
       finishQuery()
-
-  $scope.intervals = ->
-    TIME_INTERVALS
-
-  $scope.selectedIntervalName = ->
-    TIME_INTERVALS[$scope.selectedInterval].name
-
-  $scope.selectedIntervalValue = ->
-    TIME_INTERVALS[$scope.selectedInterval].hours
-
-  $scope.selectInterval = (i) ->
-    $scope.selectedInterval = i
-    query()
 
   $scope.selectAttribute = (attr) ->
     $scope.selectedAttrValues = null
@@ -92,7 +66,7 @@
     if evt.keyCode == 13
       $scope.queryString = $scope.queryStringInput
 
-  $scope.$watch '[queryString, filters]', $scope.runQuery, true
+  $scope.$watch '[queryString, filters, selectedIntervalValue()]', $scope.runQuery, true
 
   $scope.removeFilterAt = (index) ->
     $scope.filters.splice(index, 1)

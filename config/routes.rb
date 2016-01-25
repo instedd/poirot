@@ -9,13 +9,21 @@ Poirot::Application.routes.draw do
   resources :activities, only: [:index] do
     collection do
       get ':date/:id' => :show
-      resources :attributes, constraints: { id: /[^\/]+/ } do
+      resources :attributes, constraints: { id: /[^\/]+/ }, type: 'activity' do
         member do
           get 'values'
         end
       end
     end
   end
-  resources :log_entries
+  resources :log_entries do
+    collection do
+      resources :attributes, constraints: { id: /[^\/]+/ }, type: 'logentry' do
+        member do
+          get 'values'
+        end
+      end
+    end
+  end
   resources :notifications
 end

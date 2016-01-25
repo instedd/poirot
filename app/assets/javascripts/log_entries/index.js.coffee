@@ -1,13 +1,21 @@
-@app.controller 'LogEntriesController', ['$scope', ($scope) ->
+@app.controller 'LogEntriesController', ['$scope', '$http', ($scope, $http) ->
   $scope.entries = []
   $scope.totalEntries = 0
   $scope.page = 1
   $scope.pageSize = 20
   $scope.tooltip = message: '', visible: false, style: {}
-  $scope.lastQuery = null
+  $scope.filters = []
 
   table = $('.log-entries')
   viewport = $('.grid-viewport')
+
+  $http.get("/log_entries/attributes").
+    success (data) ->
+      $scope.attributes = data
+      $scope.selectedAttr = data[0]
+
+  $scope.selectedAttr = null
+  $scope.selectedAttrValues = null
 
   saveState = ->
     if window.sessionStorage
@@ -15,7 +23,7 @@
 
   loadState = ->
     if window.sessionStorage
-      $scope.queryString = window.sessionStorage.entriesQuery || ''
+      $scope.queryString = $scope.queryStringInput = window.sessionStorage.entriesQuery || ''
 
   $scope.showTooltip = (entry, event) ->
     cell = $(event.target)
@@ -32,7 +40,11 @@
     $scope.tooltip.visible = false
 
   query = () ->
-    queryData = { q: $scope.queryString, from: ($scope.page - 1) * $scope.pageSize }
+    qs = $scope.queryString
+    for filter in $scope.filters
+      qs += " #{filter.attr.name}:#{filter.value}"
+
+    queryData = { q: qs, from: ($scope.page - 1) * $scope.pageSize, since: $scope.selectedIntervalValue() }
     $.getJSON '/log_entries', queryData, (data) ->
       if data.result == 'error'
         $scope.entries = []
@@ -48,6 +60,13 @@
 
       finishQuery()
 
+  $scope.selectAttribute = (attr) ->
+    $scope.selectedAttrValues = null
+    if $scope.selectedAttr == attr
+      $scope.selectedAttr = null
+    else
+      $scope.selectedAttr = attr
+
   finishQuery = ->
     $scope.$apply()
     updatePager()
@@ -55,14 +74,17 @@
 
   $scope.runQuery = () ->
     $scope.page = 1
-    $scope.lastQuery = $scope.queryString
     query()
 
   $scope.queryKeyPress = (evt) ->
     if evt.keyCode == 13
-      $scope.runQuery()
-    else
-      $scope.lastQuery = null
+      $scope.queryString = $scope.queryStringInput
+      console.log($scope.queryString)
+
+  $scope.$watch '[queryString, filters, selectedIntervalValue()]', $scope.runQuery, true
+
+  $scope.removeFilterAt = (index) ->
+    $scope.filters.splice(index, 1)
 
   addCssClasses = (data) ->
     addCssEntry(entry) for entry in data

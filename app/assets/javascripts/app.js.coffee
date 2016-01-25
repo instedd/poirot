@@ -1,6 +1,32 @@
 @app = angular.module('poirot', [])
 
 @app.run ['$rootScope', ($rootScope) ->
+  $rootScope.selectedInterval = 1
+
+  TIME_INTERVALS = [
+    {name:"1 hour", hours: 1},
+    {name:"3 hours", hours: 3},
+    {name:"6 hours", hours: 6},
+    {name:"12 hours", hours: 12},
+    {name:"1 day", hours: 24},
+    {name:"3 days", hours: 72},
+    {name:"1 week", hours: 168},
+    {name:"3 weeks", hours: 504},
+    {name:"ever", hours: null}
+  ]
+
+  $rootScope.intervals = ->
+    TIME_INTERVALS
+
+  $rootScope.selectedIntervalName = ->
+    TIME_INTERVALS[$rootScope.selectedInterval].name
+
+  $rootScope.selectedIntervalValue = ->
+    TIME_INTERVALS[$rootScope.selectedInterval].hours
+
+  $rootScope.selectInterval = (i) ->
+    $rootScope.selectedInterval = i
+
   $rootScope.formatTimestamp = (ts) ->
     date = new Date(ts)
     h = date.getUTCHours()
