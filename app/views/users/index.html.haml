@@ -1,0 +1,13 @@
+%h2 Users
+
+%ul
+  - @users.each do |user|
+    %li
+      = user.email
+      - unless current_user == user
+        = link_to '(delete)', user_path(user), method: :delete, confirm: "Are you sure you want to delete user #{user.email}?"
+
+
+= form_for(:user) do |f|
+  = f.text_field :email
+  = f.submit 'Add User'

@@ -28,4 +28,5 @@ Poirot::Application.routes.draw do
     end
   end
   resources :notifications
+  resources :users
 end
