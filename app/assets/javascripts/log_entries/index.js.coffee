@@ -124,8 +124,8 @@
     if entry.activity.toLowerCase() != 'undefined'
       location.href = "/activities/#{entry.activity}"
 
-  $scope.open = (id, evt) ->
-    location.href = "/log_entries/#{id}" if id
+  $scope.open = (entry, evt) ->
+    location.href = $scope.logEntryUrl(entry) if entry
     evt.stopPropagation() if evt
 
   viewport.on 'scroll', updatePager

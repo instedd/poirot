@@ -18,8 +18,9 @@ Poirot::Application.routes.draw do
       end
     end
   end
-  resources :log_entries do
+  resources :log_entries, only: [:index] do
     collection do
+      get ':date/:id' => :show
       resources :attributes, constraints: { id: /[^\/]+/ }, type: 'logentry' do
         member do
           get 'values'

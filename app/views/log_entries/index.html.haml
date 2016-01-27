@@ -37,7 +37,7 @@
 
         %tbody
           %tr(ng-repeat="entry in entries" class="{{entry.cssClass}}")
-            %td.message.clickable(class="level-icon {{entry.cssClass}}" ng-mouseenter="showTooltip(entry, $event)" ng-mouseout="hideTooltip()" ng-click="open(entry.id)")
+            %td.message.clickable(class="level-icon {{entry.cssClass}}" ng-mouseenter="showTooltip(entry, $event)" ng-mouseout="hideTooltip()" ng-click="open(entry)")
               {{entry.message}}
             %td {{formatTimestamp(entry.timestamp)}}
             %td

@@ -17,9 +17,10 @@ module Hercule
       @tags = source['@tags']
     end
 
-    def self.find(id)
-      response = search(filter: { term: { '_id' => id } })
-      response.items.first
+    def self.find(date, id)
+      index = Backend.index_by_date(date)
+      result = Hercule::Backend.client.get index: index, type: 'logentry', id: id
+      LogEntry.new result
     end
 
     def self.find_by_activity(activities, query = {}, options = {})

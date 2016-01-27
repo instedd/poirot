@@ -54,4 +54,8 @@
 
   $rootScope.logEntryActivityUrl = (logentry, activityId) ->
     buildActivityUrl(logentry.timestamp, logentry.activity)
+
+  $rootScope.logEntryUrl = (logentry) ->
+    date = new Date(logentry.timestamp)
+    "/log_entries/#{date.toJSON().substring(0, 10)}/#{logentry.id}"
 ]

@@ -29,7 +29,7 @@ class LogEntriesController < ApplicationController
     respond_to do |format|
       format.html
       format.json {
-        main = Hercule::LogEntry.find(params[:id])
+        main = Hercule::LogEntry.find(params[:date], params[:id])
         render json: main.as_json
       }
     end
