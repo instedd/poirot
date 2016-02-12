@@ -1,6 +1,6 @@
 %div.logentry(ng-app="poirot" ng-controller="LogEntryController")
   %header(class="{{cssClass}}")
-    %a.parent(ng-if="logEntry.activity && logEntry.activity != 'undefined'" ng-click="openActivity(logEntry.activity)")
+    %a.parent(ng-if="logEntry.activity && logEntry.activity != 'undefined'" ng-href="{{logEntryActivityUrl(logEntry)}}")
     %b
       {{logEntry.message || "(no message)"}}
     %span.activity-title

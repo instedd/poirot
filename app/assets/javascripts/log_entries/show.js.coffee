@@ -16,9 +16,6 @@
   $scope.hideTooltip = () ->
     $scope.tooltip.visible = false
 
-  $scope.openActivity = (id) ->
-    location.href = "/activities/#{id}"
-
   loadData = (data) ->
     $scope.logEntry = data
     $scope.cssClass = "level-#{data.level.toLowerCase()}"

@@ -120,10 +120,6 @@
     else
       pagination.addClass('floating')
 
-  $scope.openActivity = (entry) ->
-    if entry.activity.toLowerCase() != 'undefined'
-      location.href = "/activities/#{entry.activity}"
-
   $scope.open = (entry, evt) ->
     location.href = $scope.logEntryUrl(entry) if entry
     evt.stopPropagation() if evt
