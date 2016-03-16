@@ -1,3 +1,6 @@
 mailer:
   delivery_method: file
-
+elasticsearch:
+  url: 'http://localhost:9200/'
+  index_prefix: 'poirot-'
+save_indices_for: 90 #days
