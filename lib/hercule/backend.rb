@@ -38,6 +38,16 @@ module Hercule
       date.strftime("poirot-%Y.%m.%d")
     end
 
+    def self.indices_span(since, to)
+      indices = []
+      loop do
+        indices << index_by_date(since)
+        since += 1.day
+        break if since > to
+      end
+      indices
+    end
+
     def self.indices_since(since)
       now = Time.now.utc
       indices = []

@@ -1,31 +1,6 @@
 class AttributesController < ApplicationController
   def index
-    mappings = Hercule::Backend.client.indices.get_mapping(
-      index: Hercule::Backend.indices_since(Time.now - 1.month),
-      type: params[:type], ignore_unavailable: true, allow_no_indices: true)
-    attributes = {"@source" => {name: "@source", filterAttr: "@source", displayName: "Source"}}
-
-    if params[:type] == 'logentry'
-      attributes["@level"] = {
-        name: "@level",
-        filterAttr: "@level",
-        displayName: "Level"
-      }
-    end
-
-    mappings.reverse_each do |index, mapping|
-      begin
-        properties = mapping["mappings"][params[:type]]["properties"]["@fields"]["properties"]
-        iterate_properties("@fields", "", properties) do |name, full_name, prop|
-          next if name.include?("/") # HACK: nested properties will be enabled later
-          full_name = full_name + ".raw" if prop["type"] == "string"
-          next if attributes.has_key?(full_name)
-
-          attributes[full_name] = {name: full_name, displayName: name, type: prop["type"]}
-        end
-      rescue
-      end
-    end
+    attributes = Attribute.all_for(params[:type])
 
     render json: attributes.values
   end
