@@ -7,7 +7,7 @@ class Attribute
     def all_for(type)
       now = Time.now.utc
       yesterday = now - 1.day
-      since = now - 1.month # TODO change this according to how many days we will keep logs
+      since = now - save_indices_for
 
       indices = Hercule::Backend.indices_span(since, yesterday)
       today_index = Hercule::Backend.index_by_date(now)
@@ -94,6 +94,10 @@ class Attribute
           iterate_properties(prop_name, "#{display_prefix}#{name}/", subproperties, &block)
         end
       end
+    end
+
+    def save_indices_for
+      Settings.save_indices_for.days
     end
 
   end
