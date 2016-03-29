@@ -14,6 +14,7 @@ Poirot::Application.routes.draw do
       resources :attributes, constraints: { id: /[^\/]+/ }, type: 'activity' do
         member do
           get 'values'
+          get 'histogram'
         end
       end
     end
@@ -24,6 +25,7 @@ Poirot::Application.routes.draw do
       resources :attributes, constraints: { id: /[^\/]+/ }, type: 'logentry' do
         member do
           get 'values'
+          get 'histogram'
         end
       end
     end

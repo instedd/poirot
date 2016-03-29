@@ -14,16 +14,29 @@
         scope.currentFilter = filter
         break
 
+    scope.isNumeric = ['long', 'integer', 'short', 'byte', 'double', 'float'].indexOf(scope.attribute.type) >= 0
+
+    scope.kind = if scope.isNumeric then 'histogram' else 'table'
+
+    if scope.currentFilter? && scope.currentFilter.type == 'range'
+      scope.range = angular.copy(scope.currentFilter.range)
+
     reload = () ->
       attr = scope.attribute
       qs = scope.query
       since = scope.since
-      for filter in scope.filters
+
+      for filter in scope.filters when filter.type == 'term'
         qs += " #{filter.attr.name}:#{filter.value}" unless filter.attr == attr
 
       $http.get("/#{scope.type}/attributes/#{attr.name}/values?q=#{escape(qs)}&since=#{since}").
         success (data) ->
           scope.values = data
+
+      if scope.isNumeric
+        $http.get("/#{scope.type}/attributes/#{attr.name}/histogram").
+          success (data) ->
+            scope.histogram = data
 
     scope.$watch '[query, filters, since]', reload, true
 
@@ -33,9 +46,9 @@
         scope.filters.splice(index, 1)
       scope.currentFilter = null
 
-    scope.addFilter = (value) ->
+    scope.addTermFilter = (value) ->
       removeCurrentFilter()
-      scope.currentFilter = {attr: scope.attribute, value: value}
+      scope.currentFilter = {attr: scope.attribute, value: value, type: 'term'}
       scope.filters.push(scope.currentFilter)
 
     scope.removeFilter = (value) ->
@@ -43,4 +56,14 @@
 
     scope.isAttrValueSelected = (value) ->
       scope.currentFilter && scope.currentFilter.value == value
+
+    scope.addRangeFilter = (range) ->
+      removeCurrentFilter()
+      range  = _.reduce(range, (r, v, k) ->
+        r[k] = v if v? && v.length > 0
+        r
+      , {})
+      unless _.isEmpty(range)
+        scope.currentFilter = {attr: scope.attribute, range: range, type: 'range'}
+        scope.filters.push(scope.currentFilter)
 ]

@@ -9,7 +9,7 @@
         %span(ng-repeat="filter in filters")
           %span.label.label-primary<
             %span.glyphicon.glyphicon-remove(style="cursor: pointer;" ng-click="removeFilterAt($index)")<
-            {{ filter.attr.displayName }}: {{ filter.value }}
+            {{filter | attributeFilter }}
       .input-group(ng-class="{'has-error': queryError}")
         %input.form-control(ng-model="queryStringInput" ng-keyup="queryKeyPress($event)")
         %span.input-group-btn

@@ -20,6 +20,7 @@ gem 'hercule', path: '.'
 gem 'haml-rails'
 gem 'angularjs-rails'
 gem 'bootstrap-sass', '~> 3.1.1'
+gem 'lodash-rails'
 gem 'rails_config'
 gem 'foreman'
 

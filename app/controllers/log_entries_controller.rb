@@ -14,6 +14,14 @@ class LogEntriesController < ApplicationController
           filter = {range: {"@timestamp" => {gte: start_date.iso8601}}}
         end
 
+        if params[:ranges].present?
+          all_filters = params[:ranges].values.map do |range_filter|
+            filter = {range: {range_filter['name'] => {gte: range_filter['range']['from'], lt: range_filter['range']['to']}}}
+          end
+          all_filters << filter if filter.present?
+          filter = {and: all_filters}
+        end
+
         begin
           result = Hercule::LogEntry.query(params[:q], {from: from, size: page_size, filter: filter}, options)
           render json: { result: 'ok', entries: result.items, total: result.total }.to_json

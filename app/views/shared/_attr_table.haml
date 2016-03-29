@@ -1,14 +1,34 @@
-%table.table(ng-if="values")
-  %thead
-    %tr
-      %th Value
-      %th Count
-  %tbody
-    %tr(ng-repeat="value in values" ng-class="{active: isAttrValueSelected(value.key)}")
-      %td
-        %span.glyphicon.glyphicon-search.attr-filter(ng-click="addFilter(value.key)" ng-if="!isAttrValueSelected(value.key)")
-        %span.glyphicon.glyphicon-remove.attr-filter(ng-click="removeFilter(value.key)" ng-if="isAttrValueSelected(value.key)")
-        {{ value.key }}
-      %td {{ value.doc_count }}
-%h5(ng-if="values.length == 0")
-  No values
+%div(ng-if="isNumeric")
+  %label
+    %input(type="radio" ng-model="$parent.kind" value="histogram")
+    %span Histogram
+  %label
+    %input(type="radio" ng-model="$parent.kind" value="table")
+    %span Table
+
+%p
+  {{range.from}}
+  {{range.to}}
+
+%ng-switch(on="kind")
+  %div(ng-switch-when="histogram")
+    %span Histogram here
+    %p {{'histogram'}}
+    %input(type="text" name="from" ng-model="range.from")
+    %input(type="text" name="to" ng-model="range.to")
+    %button(ng-click="addRangeFilter(range)") Update
+  %div(ng-switch-when="table")
+    %table.table(ng-if="values")
+      %thead
+        %tr
+          %th Value
+          %th Count
+      %tbody
+        %tr(ng-repeat="value in values" ng-class="{active: isAttrValueSelected(value.key)}")
+          %td
+            %span.glyphicon.glyphicon-search.attr-filter(ng-click="addTermFilter(value.key)" ng-if="!isAttrValueSelected(value.key)")
+            %span.glyphicon.glyphicon-remove.attr-filter(ng-click="removeFilter(value.key)" ng-if="isAttrValueSelected(value.key)")
+            {{ value.key }}
+          %td {{ value.doc_count }}
+    %h5(ng-if="values.length == 0")
+      No values

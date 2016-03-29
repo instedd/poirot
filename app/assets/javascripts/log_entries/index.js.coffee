@@ -41,10 +41,12 @@
 
   query = () ->
     qs = $scope.queryString
-    for filter in $scope.filters
+    for filter in $scope.filters when filter.type == 'term'
       qs += " #{filter.attr.name}:#{filter.value}"
 
-    queryData = { q: qs, from: ($scope.page - 1) * $scope.pageSize, since: $scope.selectedIntervalValue() }
+    rangeFilters = ({name: filter.attr.name, range: filter.range} for filter in $scope.filters when filter.type == 'range')
+    queryData = { q: qs, from: ($scope.page - 1) * $scope.pageSize, since: $scope.selectedIntervalValue(), ranges: rangeFilters }
+
     $.getJSON '/log_entries', queryData, (data) ->
       if data.result == 'error'
         $scope.entries = []
