@@ -1,4 +1,4 @@
-@app = angular.module('poirot', [])
+@app = angular.module('poirot', ['daterangepicker'])
 
 @app.run ['$rootScope', ($rootScope) ->
   $rootScope.selectedInterval = 1

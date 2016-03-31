@@ -2,6 +2,8 @@
 %div(ng-app="poirot" ng-controller="LogEntriesController")
   %script{type: 'text/ng-template', id: 'attr_table.html'}
     = render partial: 'shared/attr_table'
+  %script{type: 'text/ng-template', id: 'time.html'}
+    = render partial: 'shared/time'
 
   .row
     .col-md-8
@@ -47,6 +49,11 @@
             %td {{entry.source}}
 
     .col-md-4
+      %time(model="foo")
+      %p
+        %span outside directive model is {{foo}}
+      %p
+        %span outside directive bar is {{bar}}
       Show events since:
       .btn-group
         %button.btn.btn-default.dropdown-toggle(type="button" data-toggle="dropdown")
