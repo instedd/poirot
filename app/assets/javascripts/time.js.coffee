@@ -5,10 +5,6 @@
     model: '='
 
   link: (scope) ->
-    scope.bar = 'bar'
-
-    scope.selectionKind = 'custom' # or custom
-
     scope.spans = [
       {name:"1 hour", hours: 1},
       {name:"3 hours", hours: 3},
@@ -21,31 +17,27 @@
       {name:"ever", hours: null}
     ]
 
-    scope.selectedSpanIndex = 1
-    scope.endingAt = null
-
-    # scope.customDate = {startDate: null, endDate: null}
-    scope.datePicker = {date: {startDate: null, endDate: null}}
-
-    # scope.$watch 'datePicker.date', () ->
-    #   1
-    # , true
+    scope.selectedSpanIndex = _.findIndex scope.spans, (span) ->
+      span.hours == scope.model.span
 
     scope.selectSpan = (index) ->
       scope.selectedSpanIndex = index
+      scope.model.span = scope.spans[index].hours
 
     scope.selectedSpanName = () ->
       scope.spans[scope.selectedSpanIndex].name
 
     scope.selectEndingAtNow = () ->
-      scope.endingAt = null
+      scope.model.endingAt = null
 
     scope.selectEndingAtDate = () ->
-      scope.endingAt = Date.now() unless scope.endingAt?
+      scope.model.endingAt = moment() unless scope.model.endingAt?
 
     scope.moveEndingAtBack = () ->
-      scope.endingAt = scope.endingAt - 30 * 60 * 1000
+      scope.model.endingAt = moment(scope.model.endingAt.subtract(30, 'minutes'))
 
     scope.moveEndingAtForward = () ->
-      scope.endingAt = Math.min(Date.now(), scope.endingAt + 30 * 60 * 1000)
+      now = moment()
+      forward = moment(scope.model.endingAt.add(30, 'minutes'))
+      scope.model.endingAt = if forward.isAfter(now) then now else forward
 ]

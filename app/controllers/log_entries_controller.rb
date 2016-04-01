@@ -9,9 +9,26 @@ class LogEntriesController < ApplicationController
         options = {}
 
         if params[:since].present?
-          start_date = Time.now.utc - params[:since].to_i.hours
+          ending_at = params[:ending_at].present? ? Time.parse(params[:ending_at]) : Time.now.utc
+          start_date = ending_at - params[:since].to_i.hours
+
           options[:since] = start_date
-          filter = {range: {"@timestamp" => {gte: start_date.iso8601}}}
+
+          range = {gte: start_date.iso8601}
+          range[:lte] = ending_at.iso8601 if params[:ending_at].present?
+
+          filter = {range: {"@timestamp" => range}}
+        elsif params[:start_date].present? || params[:end_date].present?
+          start_date = params[:start_date].present? ? Time.parse(params[:start_date]) : nil
+          end_date = params[:end_date].present? ? Time.parse(params[:end_date]) : nil
+
+          options[:since] = start_date if start_date.present?
+
+          range = {}
+          range[:gte] = start_date.iso8601 if start_date.present?
+          range[:lte] = end_date.iso8601 if end_date.present?
+
+          filter = {range: {"@timestamp" => range}}
         end
 
         begin

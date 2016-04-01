@@ -49,19 +49,7 @@
             %td {{entry.source}}
 
     .col-md-4
-      %time(model="foo")
-      %p
-        %span outside directive model is {{foo}}
-      %p
-        %span outside directive bar is {{bar}}
-      Show events since:
-      .btn-group
-        %button.btn.btn-default.dropdown-toggle(type="button" data-toggle="dropdown")
-          {{ selectedIntervalName() }}
-          %span.caret
-        %ul.dropdown-menu(role="menu")
-          %li(ng-repeat="interval in intervals()")
-            %a(href="#" ng-click="selectInterval($index)") {{ interval.name }}
+      %time(model="timeModel")
 
       %h4 Fields
       %ul

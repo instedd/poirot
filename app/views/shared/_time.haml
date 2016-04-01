@@ -4,12 +4,12 @@
   %p {{bar}}
   %div
     %label
-      %input(type="radio" ng-model="selectionKind" value="span")
+      %input(type="radio" ng-model="model.selectionKind" value="span")
       Time span
     %label
-      %input(type="radio" ng-model="selectionKind" value="custom")
+      %input(type="radio" ng-model="model.selectionKind" value="custom")
       Custom date
-  %div(ng-switch="selectionKind")
+  %div(ng-switch="model.selectionKind")
     %div(ng-switch-when="span")
       %h1 SPAN
       .btn-group
@@ -22,10 +22,13 @@
       %p Selected index {{selectedSpanIndex}}
       %div
         .btn-group
-          %button(type="button" class="btn btn-default" ng-class="{'active': endingAt == null}" ng-click="selectEndingAtNow()") Now
-          %button(type="button" class="btn btn-default" ng-class="{'active': endingAt != null}" ng-click="selectEndingAtDate()") Date
-        %div(ng-if="endingAt != null")
-          %input(type="text" ng-model="endingAt")
+          %button(type="button" class="btn btn-default" ng-class="{'active': model.endingAt == null}" ng-click="selectEndingAtNow()") Now
+          %button(type="button" class="btn btn-default" ng-class="{'active': model.endingAt != null}" ng-click="selectEndingAtDate()") Date
+        %div(ng-if="model.endingAt != null")
+          .input-group
+            %input(date-range-picker class="form-control date-picker" type="text" ng-model="model.endingAt" options="{'opens': 'left', 'singleDatePicker': true, 'timePicker': true, 'timePicker24Hour': true, 'locale': {'format': 'YYYY-MM-DD HH.mm.ss.SSS Z'}}")
+            %span.input-group-addon
+              %i(class="glyphicon glyphicon-calendar fa fa-calendar")
           %button(type="button" ng-click="moveEndingAtBack()") Back 30 min
           %button(type="button" ng-click="moveEndingAtForward()") Forward 30 min
 
@@ -33,7 +36,7 @@
     %div(ng-switch-when="custom")
       %h1 CUSTOM
       .input-group
-        %input(date-range-picker class="form-control date-picker" type="text" ng-model="datePicker.date" options="{'opens': 'left'}")
+        %input(date-range-picker class="form-control date-picker" type="text" ng-model="model.range" options="{'opens': 'left'}")
         %span.input-group-addon
           %i(class="glyphicon glyphicon-calendar fa fa-calendar")
       %p Model: {{datePicker.date}}
