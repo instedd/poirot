@@ -47,4 +47,26 @@
   $rootScope.logEntryUrl = (logentry) ->
     date = new Date(logentry.timestamp)
     "/log_entries/#{date.toJSON().substring(0, 10)}/#{logentry.id}"
+
+  $rootScope.serializeTimeModel = () ->
+    model = $rootScope.timeModel
+    serialized = {selectionKind: model.selectionKind}
+    if model.selectionKind == 'span'
+      serialized.span = model.span
+      serialized.endingAt = model.endingAt?.toISOString()
+    else
+      serialized.startDate = model.range.startDate?.toISOString()
+      serialized.endDate = model.range.endDate?.toISOString()
+    serialized
+
+  $rootScope.loadTimeModel = (serialized) ->
+    model = $rootScope.timeModel
+    if serialized.selectionKind == 'span'
+      model.selectionKind = 'span'
+      model.span = serialized.span
+      model.endingAt = moment(serialized.endingAt) if serialized.endingAt?
+    else if serialized.selectionKind == 'custom'
+      model.selectionKind = 'custom'
+      model.range.startDate = moment(serialized.startDate) if serialized.startDate?
+      model.range.endDate = moment(serialized.endDate) if serialized.endDate?
 ]

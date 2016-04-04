@@ -18,12 +18,12 @@
   saveState = ->
     if window.sessionStorage
       window.sessionStorage.activitiesQuery = $scope.queryString
-      window.sessionStorage.selectedInterval = $scope.selectedInterval
+      window.sessionStorage.timeModel = JSON.stringify($scope.serializeTimeModel())
 
   loadState = ->
     if window.sessionStorage
       $scope.queryString = $scope.queryStringInput = window.sessionStorage.activitiesQuery || ''
-      $scope.selectedInterval = window.sessionStorage.selectedInterval || 1
+      $scope.loadTimeModel(JSON.parse(window.sessionStorage.timeModel)) if window.sessionStorage.timeModel?
 
   query = () ->
     qs = $scope.queryString
