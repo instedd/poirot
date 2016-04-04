@@ -1,7 +1,4 @@
 %div
-  %p Time component
-  %p {{model}}
-  %p {{bar}}
   %div
     %label
       %input(type="radio" ng-model="model.selectionKind" value="span")
@@ -11,16 +8,14 @@
       Custom date
   %div(ng-switch="model.selectionKind")
     %div(ng-switch-when="span")
-      %h1 SPAN
-      .btn-group
-        %button.btn.btn-default.dropdown-toggle(type="button" data-toggle="dropdown")
-          {{ selectedSpanName() }}
-          %span.caret
-        %ul.dropdown-menu(role="menu")
-          %li(ng-repeat="span in spans")
-            %a(href="#" ng-click="selectSpan($index)") {{ span.name }}
-      %p Selected index {{selectedSpanIndex}}
       %div
+        .btn-group
+          %button.btn.btn-default.dropdown-toggle(type="button" data-toggle="dropdown")
+            {{ selectedSpanName() }}
+            %span.caret
+          %ul.dropdown-menu(role="menu")
+            %li(ng-repeat="span in spans")
+              %a(href="#" ng-click="selectSpan($index)") {{ span.name }}
         .btn-group
           %button(type="button" class="btn btn-default" ng-class="{'active': model.endingAt == null}" ng-click="selectEndingAtNow()") Now
           %button(type="button" class="btn btn-default" ng-class="{'active': model.endingAt != null}" ng-click="selectEndingAtDate()") Date
@@ -34,9 +29,7 @@
 
 
     %div(ng-switch-when="custom")
-      %h1 CUSTOM
       .input-group
         %input(date-range-picker class="form-control date-picker" type="text" ng-model="model.range" options="{'opens': 'left'}")
         %span.input-group-addon
           %i(class="glyphicon glyphicon-calendar fa fa-calendar")
-      %p Model: {{datePicker.date}}
