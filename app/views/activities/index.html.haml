@@ -2,6 +2,8 @@
 %div(ng-app="poirot" ng-controller="ActivityIndexController")
   %script{type: 'text/ng-template', id: 'attr_table.html'}
     = render partial: 'shared/attr_table'
+  %script{type: 'text/ng-template', id: 'time.html'}
+    = render partial: 'shared/time'
 
   .row
     .col-md-8
@@ -44,20 +46,13 @@
             %td {{formatTimestamp(activity.stop)}}
             %td {{activity.source}}
     .col-md-4
-      Show events since:
-      .btn-group
-        %button.btn.btn-default.dropdown-toggle(type="button" data-toggle="dropdown")
-          {{ selectedIntervalName() }}
-          %span.caret
-        %ul.dropdown-menu(role="menu")
-          %li(ng-repeat="interval in intervals()")
-            %a(href="#" ng-click="selectInterval($index)") {{ interval.name }}
+      %time(model="timeModel")
 
       %h4 Fields
       %ul
         %li(ng-repeat="attr in attributes")
           %a(href="#" ng-click="selectAttribute(attr)") {{ attr.displayName }}
-          %p-attr-table(ng-if="selectedAttr == attr" type="activities" attribute="attr" query="queryString" filters="filters" since="selectedIntervalValue()")
+          %p-attr-table(ng-if="selectedAttr == attr" type="activities" attribute="attr" query="queryString" filters="filters" time="timeFilter")
 
   %div.row.pager-footer(ng-if="shouldPage()")
     %ul.pager
@@ -67,4 +62,3 @@
         {{fromActivity()}}-{{toActivity()}} of {{totalCount}} activities
       %li.next
         %a(href="#" ng-click="nextPage()") Older &rarr;
-

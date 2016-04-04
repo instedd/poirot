@@ -5,7 +5,7 @@
     attribute: '=attribute'
     query: '='
     filters: '='
-    since: '='
+    time: '='
     type: '@'
 
   link: (scope) ->
@@ -17,15 +17,17 @@
     reload = () ->
       attr = scope.attribute
       qs = scope.query
-      since = scope.since
+      time = scope.time
       for filter in scope.filters
         qs += " #{filter.attr.name}:#{filter.value}" unless filter.attr == attr
 
-      $http.get("/#{scope.type}/attributes/#{attr.name}/values?q=#{escape(qs)}&since=#{since}").
-        success (data) ->
-          scope.values = data
+      queryData = _.merge({q:qs}, time)
 
-    scope.$watch '[query, filters, since]', reload, true
+      $.getJSON "/#{scope.type}/attributes/#{attr.name}/values", queryData, (data) ->
+        scope.values = data
+        scope.$apply()
+
+    scope.$watch '[query, filters, time]', reload, true
 
     removeCurrentFilter = ->
       if scope.currentFilter

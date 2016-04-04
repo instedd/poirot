@@ -6,13 +6,38 @@ class AttributesController < ApplicationController
   end
 
   def values
-    start_date = Time.now.utc - params[:since].to_i.hours
     ts_property = params[:type] == 'activity' ? "@start" : "@timestamp"
+    options = {type: params[:type]}
+    query = {match_all: {}}
+
+    if params[:since].present?
+      ending_at = params[:ending_at].present? ? Time.parse(params[:ending_at]) : Time.now.utc
+      start_date = ending_at - params[:since].to_i.hours
+
+      options[:since] = start_date
+
+      range = {gte: start_date.iso8601}
+      range[:lte] = ending_at.iso8601 if params[:ending_at].present?
+
+      query = {range: {ts_property => range}}
+    elsif params[:start_date].present? || params[:end_date].present?
+      start_date = params[:start_date].present? ? Time.parse(params[:start_date]) : nil
+      end_date = params[:end_date].present? ? Time.parse(params[:end_date]) : nil
+
+      options[:since] = start_date if start_date.present?
+
+      range = {}
+      range[:gte] = start_date.iso8601 if start_date.present?
+      range[:lte] = end_date.iso8601 if end_date.present?
+
+      query = {range: {ts_property => range}}
+    end
+
+    start_date = Time.now.utc - params[:since].to_i.hours
+
     search = {
       size: 0,
-      query: {
-        range: { ts_property => { gte: start_date.iso8601 } }
-      },
+      query: query,
       aggs: {
         attr_values: {
           terms: {
@@ -26,7 +51,7 @@ class AttributesController < ApplicationController
       search[:query] = Hercule::Activity.build_query(params[:q])
     end
 
-    result = Hercule::Backend.search(search, type: params[:type], since: start_date)
+    result = Hercule::Backend.search(search, options)
     render json: result['aggregations']['attr_values']['buckets']
   end
 
