@@ -30,8 +30,7 @@
     for filter in $scope.filters
       qs += " #{filter.attr.name}:#{filter.value}"
 
-    timeFilter = $scope.getTimeFilter()
-    queryData = _.merge({ q: qs, from: ($scope.page - 1) * $scope.pageSize}, timeFilter)
+    queryData = _.merge({ q: qs, from: ($scope.page - 1) * $scope.pageSize}, $scope.timeFilter)
 
     $.getJSON '/activities', queryData, (data) ->
       if data.result == 'error'
@@ -68,7 +67,7 @@
     if evt.keyCode == 13
       $scope.queryString = $scope.queryStringInput
 
-  $scope.$watch '[queryString, filters, timeModel]', $scope.runQuery, true
+  $scope.$watch '[queryString, filters, timeFilter]', $scope.runQuery, true
 
   $scope.removeFilterAt = (index) ->
     $scope.filters.splice(index, 1)

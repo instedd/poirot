@@ -55,7 +55,7 @@
       %ul
         %li(ng-repeat="attr in attributes")
           %a(href="#" ng-click="selectAttribute(attr)") {{ attr.displayName }}
-          %p-attr-table(ng-if="selectedAttr == attr" type="log_entries" attribute="attr" query="queryString" filters="filters" since="selectedIntervalValue()")
+          %p-attr-table(ng-if="selectedAttr == attr" type="log_entries" attribute="attr" query="queryString" filters="filters" time="timeFilter")
 
 
   %div.row.pager-footer(ng-if="shouldPage()")

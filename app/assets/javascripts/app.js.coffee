@@ -7,16 +7,14 @@
     endingAt: null
     span: 3
 
-  $rootScope.getTimeFilter = () ->
+  setTimeFilter = () ->
     if $rootScope.timeModel.selectionKind == 'span'
-      {since: $rootScope.timeModel.span, ending_at: $rootScope.timeModel.endingAt?.toISOString()}
+      $rootScope.timeFilter = {since: $rootScope.timeModel.span, ending_at: $rootScope.timeModel.endingAt?.toISOString()}
     else
       range = $rootScope.timeModel.range
-      {start_date: range.startDate?.toISOString(), end_date: range.endDate?.toISOString()}
+      $rootScope.timeFilter = {start_date: range.startDate?.toISOString(), end_date: range.endDate?.toISOString()}
 
-  $rootScope.selectedIntervalValue = ->
-    3
-    # TIME_INTERVALS[$rootScope.selectedInterval].hours
+  $rootScope.$watch 'timeModel', setTimeFilter, true
 
   $rootScope.formatTimestamp = (ts) ->
     date = new Date(ts)
