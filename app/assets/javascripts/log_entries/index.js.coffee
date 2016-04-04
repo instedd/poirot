@@ -45,7 +45,8 @@
       qs += " #{filter.attr.name}:#{filter.value}"
 
     rangeFilters = ({name: filter.attr.name, range: filter.range} for filter in $scope.filters when filter.type == 'range')
-    queryData = { q: qs, from: ($scope.page - 1) * $scope.pageSize, since: $scope.selectedIntervalValue(), ranges: rangeFilters }
+
+    queryData = _.merge({q: qs, from: ($scope.page - 1) * $scope.pageSize, ranges: rangeFilters}, $scope.timeFilter)
 
     $.getJSON '/log_entries', queryData, (data) ->
       if data.result == 'error'
@@ -83,7 +84,7 @@
       $scope.queryString = $scope.queryStringInput
       console.log($scope.queryString)
 
-  $scope.$watch '[queryString, filters, selectedIntervalValue()]', $scope.runQuery, true
+  $scope.$watch '[queryString, filters, timeFilter]', $scope.runQuery, true
 
   $scope.removeFilterAt = (index) ->
     $scope.filters.splice(index, 1)

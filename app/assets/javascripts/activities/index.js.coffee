@@ -18,12 +18,12 @@
   saveState = ->
     if window.sessionStorage
       window.sessionStorage.activitiesQuery = $scope.queryString
-      window.sessionStorage.selectedInterval = $scope.selectedInterval
+      window.sessionStorage.timeModel = JSON.stringify($scope.serializeTimeModel())
 
   loadState = ->
     if window.sessionStorage
       $scope.queryString = $scope.queryStringInput = window.sessionStorage.activitiesQuery || ''
-      $scope.selectedInterval = window.sessionStorage.selectedInterval || 1
+      $scope.loadTimeModel(JSON.parse(window.sessionStorage.timeModel)) if window.sessionStorage.timeModel?
 
   query = () ->
     qs = $scope.queryString
@@ -31,7 +31,8 @@
       qs += " #{filter.attr.name}:#{filter.value}"
 
     rangeFilters = ({name: filter.attr.name, range: filter.range} for filter in $scope.filters when filter.type == 'range')
-    queryData = { q: qs, from: ($scope.page - 1) * $scope.pageSize, since: $scope.selectedIntervalValue(), ranges: rangeFilters }
+
+    queryData = _.merge({ q: qs, from: ($scope.page - 1) * $scope.pageSize, ranges: rangeFilters}, $scope.timeFilter)
 
     $.getJSON '/activities', queryData, (data) ->
       if data.result == 'error'
@@ -68,7 +69,7 @@
     if evt.keyCode == 13
       $scope.queryString = $scope.queryStringInput
 
-  $scope.$watch '[queryString, filters, selectedIntervalValue()]', $scope.runQuery, true
+  $scope.$watch '[queryString, filters, timeFilter]', $scope.runQuery, true
 
   $scope.removeFilterAt = (index) ->
     $scope.filters.splice(index, 1)
@@ -104,4 +105,3 @@
 
   loadState()
 ]
-

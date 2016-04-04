@@ -14,6 +14,9 @@
 //= require jquery_ujs
 //= require angular
 //= require bootstrap
+//= require moment
+//= require daterangepicker
+//= require angular-daterangepicker
 //= require lodash
 //= require 'app'
 //= require 'snap.svg-min'

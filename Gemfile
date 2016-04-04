@@ -18,11 +18,12 @@ gem 'alto_guisso_rails', github: "instedd/alto_guisso_rails", branch: 'master'
 gem 'hercule', path: '.'
 
 gem 'haml-rails'
-gem 'angularjs-rails'
+gem 'angularjs-rails', '~> 1.2.0'
 gem 'bootstrap-sass', '~> 3.1.1'
 gem 'lodash-rails'
 gem 'rails_config'
 gem 'foreman'
+gem 'lodash-rails'
 
 group :development, :test do
   gem 'pry-byebug'
