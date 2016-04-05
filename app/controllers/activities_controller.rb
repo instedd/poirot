@@ -31,15 +31,42 @@ class ActivitiesController < ApplicationController
           filter = {range: {"@start" => range}}
         end
 
+        histogram_aggs = bars_aggregation_for_range(filter, start_date)
+        page_query = {from: from, size: page_size, filter: filter}
+
         begin
-          result = Hercule::Activity.query(params[:q], {from: from, size: page_size, filter: filter}, options).with_levels
-          render json: { result: 'ok', activities: result.items, total: result.total }.to_json
+          result = Hercule::Activity.query(params[:q], page_query, options).with_levels
+          bars_result = Hercule::Activity.query(params[:q], histogram_aggs, options).with_levels
+          buckets = bars_result.response['aggregations']['filtered_activities_by_period']['activities_by_period']['buckets']
+          bars_result = buckets.map {|b| {timestamp: b['key'], count: b['doc_count']}}
+          render json: { result: 'ok', activities: result.items, bars: bars_result, total: result.total}.to_json
         rescue Elasticsearch::Transport::Transport::Errors::BadRequest => e
           response = JSON.parse(e.message[6..-1])
           render json: { result: 'error', body: response['error'] }.to_json
         end
       }
     end
+  end
+
+  def bars_aggregation_for_range(filter, from, to = Time.now)
+    from ||= Time.now - Settings.save_indices_for.days
+    number_of_bars = 90
+    interval = (to.tv_sec - from.tv_sec)/number_of_bars
+    {
+      aggregations: {
+        filtered_activities_by_period: {
+            filter: filter,
+            aggs: {
+              activities_by_period: {
+                date_histogram: {
+                     field: "@start",
+                  interval: "#{interval}s"
+                }
+              }
+            }
+        }
+      }
+    }
   end
 
   def show

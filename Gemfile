@@ -24,6 +24,9 @@ gem 'rails_config'
 gem 'foreman'
 gem 'lodash-rails'
 
+gem 'd3-rails'
+gem 'lodash-rails'
+
 group :development, :test do
   gem 'pry-byebug'
   gem 'capistrano', '~> 2.0'

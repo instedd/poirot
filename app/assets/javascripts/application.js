@@ -17,6 +17,7 @@
 //= require moment
 //= require daterangepicker
 //= require angular-daterangepicker
+//= require d3
 //= require lodash
 //= require 'app'
 //= require 'snap.svg-min'
