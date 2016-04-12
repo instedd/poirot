@@ -1,9 +1,11 @@
 %br
-%div(ng-app="poirot" ng-controller="ActivityIndexController")
+%div(ng-app="poirot" ng-controller="ActivityIndexController as indexCtrl")
   %script{type: 'text/ng-template', id: 'attr_table.html'}
     = render partial: 'shared/attr_table'
   %script{type: 'text/ng-template', id: 'time.html'}
     = render partial: 'shared/time'
+  %script{type: 'text/ng-template', id: 'histogram.html'}
+    = render partial: 'shared/histogram'
 
   .row
     .col-md-8
@@ -17,7 +19,7 @@
         %span.input-group-btn
           %button.btn.btn-default(ng-click="runQuery()") Query
 
-      = render partial: 'shared/histogram'
+      = render partial: 'shared/results_histogram'
 
       %table.table.table-stripped.table-hover.activities
         %colgroup

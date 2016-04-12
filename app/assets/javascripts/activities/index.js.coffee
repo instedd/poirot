@@ -4,7 +4,8 @@
   $scope.page = 1
   $scope.pageSize = 20
   $scope.filters = []
-  $scope.histogram_initialized = false
+  activityController = this
+  activityController.histogramDataLoaded = {}
 
   table = $('.activities')
 
@@ -15,6 +16,9 @@
 
   $scope.selectedAttr = null
   $scope.selectedAttrValues = null
+
+  activityController.onHistogramDataArrived = (handler) ->
+    activityController.histogramDataLoaded = handler
 
   saveState = ->
     if window.sessionStorage
@@ -45,7 +49,7 @@
         data.activities = data.activities.sort (a,b) ->
           if a.start < b.start then 1 else -1
         $scope.activities = data.activities
-        $scope.histogram_data = data.bars
+        activityController.histogramDataLoaded(data.bars)
 
       finishQuery()
 
@@ -58,82 +62,8 @@
 
   finishQuery = ->
     $scope.$apply()
-    initialize_histogram() unless $scope.histogram_initialized
-    drawHistogram()
     updatePager()
     saveState()
-
-  initialize_histogram = ->
-    $scope.histogram_initialized = true
-    $scope.histogram_values =
-      container_height: 100
-      margin_left: 15
-      margin_right: 15
-      date_axis_height: 20
-      histogram_height: 80
-
-    container = $("#histogram-results")
-    $scope.svg = d3.select("#histogram-results").append("svg")
-      .attr("width", container.width())
-      .attr("height", $scope.histogram_values.container_height)
-    .append("g")
-
-    $scope.scaleX = d3.time.scale.utc()
-      .rangeRound([0, container.width()-$scope.histogram_values.margin_left-$scope.histogram_values.margin_right])
-      .nice(9)
-
-    $scope.axis = axis  = d3.svg.axis()
-      .scale($scope.scaleX)
-      .ticks(9)
-      .orient("bottom")
-  
-    $scope.svg.append("g")
-      .attr("class", "axis")
-      .attr("transform", "translate(" + $scope.histogram_values.margin_left + ", " + $scope.histogram_values.histogram_height + ")")
-      .call(axis)
-
-    $scope.bars = $scope.svg.append("g")
-      .attr("class", "bars")
-      .attr("height", $scope.histogram_values.histogram_height)
-      .attr("width", container.width()-$scope.histogram_values.margin_left-$scope.histogram_values.margin_right)
-      .attr("transform", "translate(" + $scope.histogram_values.margin_left + ", 0)")
-
-  drawHistogram = ->
-    data = $scope.histogram_data
-    container = $("#histogram-results")
-
-    timestamps = _.map(data, 'timestamp')
-    min_timestamp = _.min(timestamps)
-    max_timestamp = _.max(timestamps)
-    counts = _.map(data, 'count')
-    max_count = _.max(counts)
-
-    min_date = new Date(min_timestamp)
-    max_date = new Date(max_timestamp)
-    $scope.scaleX.domain([min_date, max_date])
-    $scope.svg.selectAll("g .axis").call($scope.axis)
-
-    bar_width = (container.width()-$scope.histogram_values.margin_left-$scope.histogram_values.margin_right)/data.length
-    groups = $scope.bars.selectAll(".rect")
-      .data(data)
-
-    groups.enter()
-      .append("rect")
-        .attr("class", "rect")
-        .attr("width", bar_width)
-        .attr("height", 0)
-        .attr("transform", (d, i) ->
-          "translate(" + (bar_width*i) + ", " + $scope.histogram_values.histogram_height + ")"
-        )
-
-    groups.exit()
-      .remove()
-
-    groups.transition()
-      .attr("transform", (d, i) ->
-        "translate(" + (bar_width*i) + ", " + ($scope.histogram_values.histogram_height-((d.count/max_count)*$scope.histogram_values.histogram_height)) + ")"
-      )
-      .attr("height", (d, i) -> (d.count/max_count) * $scope.histogram_values.histogram_height)
 
   $scope.runQuery = () ->
     $scope.page = 1

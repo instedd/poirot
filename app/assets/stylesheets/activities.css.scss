@@ -30,6 +30,16 @@ col.pid {
     shape-rendering: crispEdges;
   }
 
+  .loading {
+    background-image: asset-url('loading_wheel.gif');
+    background-repeat: no-repeat;
+    width: 40px;
+    height: 40px;
+    display: block;
+    position: relative;
+    margin: 0 50% 0 50%;
+  }
+
 }
 
 .message-tooltip {
